@@ -1,5 +1,4 @@
 #!/usr/local/bin/python2
-from OpenSSL import SSL
 import database as db
 import time
 import imp
@@ -28,15 +27,16 @@ def addUser():
   resp = jsonify(success=True)
   return make_response(resp,201)
 
-# @app.route('/user/login', methods=['POST']) 
-# def loginUser():
-#   username = str(request.json.get('username', ""))
-#   password = str(request.json.get('password', ""))
-  
-#   u = db.User(username,password,email)
-#   db.db_session.add(u)
-#   db.db_session.commit()
-#   return "ACK"
+@app.route('/user/login', methods=['POST']) 
+def loginUser():
+  username = str(request.json.get('username', ""))
+  password = str(request.json.get('password', ""))
+  if db.User.query.filter_by(username = username).count()!= 1:
+    return "FAILED", 404
+  u = db.User(username,password,email)
+  db.db_session.add(u)
+  db.db_session.commit()
+  return "ACK"
 
 @app.route('/user/list', methods=['GET']) 
 def listUser():
