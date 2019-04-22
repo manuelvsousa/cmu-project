@@ -17,8 +17,6 @@ config = imp.load_source('', 'config.py')
 
 @app.route('/user/register', methods=['POST']) 
 def addUser():
-  print request.get_json()
-  print "fodassse"
   username = str(request.json.get('username', ""))
   password = str(request.json.get('password', ""))
   passwordConfirmation = str(request.json.get('passwordConfirmation', ""))
