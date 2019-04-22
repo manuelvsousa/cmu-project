@@ -15,18 +15,11 @@ app = Flask(__name__)
 
 config = imp.load_source('', 'config.py')
 
-@app.errorhandler(404)
-def not_found(error):
-  return make_response(jsonify({'error': 'Not found'}), 404)
-
 @app.route('/user/register', methods=['POST']) 
 def addUser():
   username = str(request.json.get('username', ""))
   password = str(request.json.get('password', ""))
   passwordConfirmation = str(request.json.get('passwordConfirmation', ""))
-  if(username is None or password is None or passwordConfirmation is None):
-    resp = jsonify(success=False,message = "username or password or passwordConfirmation is undefined")
-    return make_response(resp,400)
 
   if(username is "" or password is "" or passwordConfirmation is ""):
     resp = jsonify(success=False,message = "username or password or passwordConfirmation is empty")
@@ -53,10 +46,6 @@ def loginUser():
   username = str(request.json.get('username', ""))
   password = str(request.json.get('password', ""))
   passwordConfirmation = str(request.json.get('passwordConfirmation', ""))
-
-  if(username is None or password is None or passwordConfirmation is None):
-    resp = jsonify(success=False,message = "username or password or passwordConfirmation is undefined")
-    return make_response(resp,400)
 
   if(username is "" or password is "" or passwordConfirmation is ""):
     resp = jsonify(success=False,message = "username or password or passwordConfirmation is empty")
