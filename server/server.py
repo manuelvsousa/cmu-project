@@ -39,7 +39,24 @@ def addUser():
   resp = jsonify(success=True)
   return make_response(resp,201)
 
+@app.route('/user/register/drive', methods=['POST']) 
+def addUser():
+  token = str(request.json.get('token', ""))
+  drive = str(request.json.get('drive', ""))
 
+  if(token is "" or drive):
+    resp = jsonify(success=False,message = "token or drive is empty")
+    return make_response(resp,400)
+
+  if db.User.query.filter_by(username = username).count() > 0:
+    resp = jsonify(success=False,message = "username already exists")
+    return make_response(resp,400)
+
+  u = db.User(username,password)
+  db.db_session.add(u)
+  db.db_session.commit()
+  resp = jsonify(success=True)
+  return make_response(resp,201)
 
 @app.route('/user/login', methods=['POST']) 
 def loginUser():
