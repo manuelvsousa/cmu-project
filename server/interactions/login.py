@@ -10,7 +10,7 @@ password = sys.argv[2]
 
 data = {"username":username,"password":password,"passwordConfirmation":password}
 
-r = requests.post("http://127.0.0.1:5000/user/register",json = data)
+r = requests.post("http://127.0.0.1:5000/user/login",json = data)
 print r.text
 
 print r.status_code

@@ -4,6 +4,13 @@ import time
 import imp
 from functools import wraps # TODO Maybe pip install
 from flask import Flask, request, make_response, abort, jsonify
+import random
+import string
+import time
+
+TOKEN_LEN = 128
+
+
 app = Flask(__name__)
 
 config = imp.load_source('', 'config.py')
@@ -16,9 +23,21 @@ def not_found(error):
 def addUser():
   username = str(request.json.get('username', ""))
   password = str(request.json.get('password', ""))
-  print db.User.query.filter_by(username = username)
+  passwordConfirmation = str(request.json.get('passwordConfirmation', ""))
+  if(username is None or password is None or passwordConfirmation is None):
+    resp = jsonify(success=False,message = "username or password or passwordConfirmation is undefined")
+    return make_response(resp,400)
+
+  if(username is "" or password is "" or passwordConfirmation is ""):
+    resp = jsonify(success=False,message = "username or password or passwordConfirmation is empty")
+    return make_response(resp,400)
+
+  if(password != passwordConfirmation):
+    resp = jsonify(success=False,message = "Passwords do not match")
+    return make_response(resp,400)
+
   if db.User.query.filter_by(username = username).count() > 0:
-    resp = jsonify(success=False)
+    resp = jsonify(success=False,message = "username already exists")
     return make_response(resp,400)
 
   u = db.User(username,password)
@@ -27,16 +46,37 @@ def addUser():
   resp = jsonify(success=True)
   return make_response(resp,201)
 
+
+
 @app.route('/user/login', methods=['POST']) 
 def loginUser():
   username = str(request.json.get('username', ""))
   password = str(request.json.get('password', ""))
-  if db.User.query.filter_by(username = username).count()!= 1:
-    return "FAILED", 404
-  u = db.User(username,password,email)
-  db.db_session.add(u)
+  passwordConfirmation = str(request.json.get('passwordConfirmation', ""))
+
+  if(username is None or password is None or passwordConfirmation is None):
+    resp = jsonify(success=False,message = "username or password or passwordConfirmation is undefined")
+    return make_response(resp,400)
+
+  if(username is "" or password is "" or passwordConfirmation is ""):
+    resp = jsonify(success=False,message = "username or password or passwordConfirmation is empty")
+    return make_response(resp,400)
+
+  if(password != passwordConfirmation):
+    return make_response("Passwords do not match",400)
+
+  if db.User.query.filter_by(username = username, password = password).count() != 1:
+    resp = jsonify(success=False,message = "username not found or password invalid")
+    return make_response(resp,404)
+
+  token = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(TOKEN_LEN))
+  ts = time.time()
+  s = db.Session(token,ts)
+  db.db_session.add(s)
   db.db_session.commit()
-  return "ACK"
+
+  resp = jsonify(success=True, token = token)
+  return make_response(resp,201)
 
 @app.route('/user/list', methods=['GET']) 
 def listUser():

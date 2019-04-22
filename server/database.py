@@ -27,4 +27,14 @@ class User(Base):
     self.username = username
     self.password = password
 
+class Session(Base):
+  query = db_session.query_property()
+  __tablename__ = 'session'
+  token = Column(Unicode(40), primary_key=True)
+  username = Column(Unicode(40))
+
+  def __init__(self, username, token):
+    self.username = username
+    self.token = token
+
 Base.metadata.create_all()
