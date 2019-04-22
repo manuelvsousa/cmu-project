@@ -1,8 +1,8 @@
 package com.cmu.p2photo;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
@@ -13,7 +13,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button btnSignUp = (Button) findViewById(R.id.btnSign_main);
+        Button btnSignUp = findViewById(R.id.btnSign_main);
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button btnLogin = (Button) findViewById(R.id.btnLogin_main);
+        Button btnLogin = findViewById(R.id.btnLogin_main);
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

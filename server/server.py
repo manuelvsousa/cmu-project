@@ -17,11 +17,13 @@ config = imp.load_source('', 'config.py')
 
 @app.route('/user/register', methods=['POST']) 
 def addUser():
+  print request.get_json()
+  print "fodassse"
   username = str(request.json.get('username', ""))
   password = str(request.json.get('password', ""))
   passwordConfirmation = str(request.json.get('passwordConfirmation', ""))
 
-  if(username is "" or password is "" or passwordConfirmation is ""):
+  if(username == "" or password == "" or passwordConfirmation == ""):
     resp = jsonify(success=False,message = "username or password or passwordConfirmation is empty")
     return make_response(resp,400)
 
@@ -40,11 +42,11 @@ def addUser():
   return make_response(resp,201)
 
 @app.route('/user/register/drive', methods=['POST']) 
-def addUser():
+def addDrive():
   token = str(request.json.get('token', ""))
   drive = str(request.json.get('drive', ""))
 
-  if(token is "" or drive):
+  if(token == "" or drive == ""):
     resp = jsonify(success=False,message = "token or drive is empty")
     return make_response(resp,400)
 
@@ -62,14 +64,10 @@ def addUser():
 def loginUser():
   username = str(request.json.get('username', ""))
   password = str(request.json.get('password', ""))
-  passwordConfirmation = str(request.json.get('passwordConfirmation', ""))
 
-  if(username is "" or password is "" or passwordConfirmation is ""):
-    resp = jsonify(success=False,message = "username or password or passwordConfirmation is empty")
+  if(username == "" or password == ""):
+    resp = jsonify(success=False,message = "username or password is empty")
     return make_response(resp,400)
-
-  if(password != passwordConfirmation):
-    return make_response("Passwords do not match",400)
 
   if db.User.query.filter_by(username = username, password = password).count() != 1:
     resp = jsonify(success=False,message = "username not found or password invalid")
@@ -88,7 +86,7 @@ def loginUser():
 def listUser():
   print repr(request.json)
   users = db.User.query.all()
-  return jsonify([user.name for user in users])
+  return jsonify([user.username for user in users])
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True)
