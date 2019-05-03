@@ -1,1 +1,1 @@
-# cmu-projet
+# G6 CMU Project

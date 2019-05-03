@@ -1,6 +1,7 @@
 package com.cmu.p2photo;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -9,9 +10,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.cmu.p2photo.util.Config;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -31,6 +31,8 @@ public class Login extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         Button btnLogin = findViewById(R.id.LoginButton);
+        final String apiUrl = Config.getConfigValue(this, "api_url");
+        final String sp = Config.getConfigValue(this, "shared_preferences");
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -42,7 +44,7 @@ public class Login extends AppCompatActivity {
                     jsonParams.put("password", password.getText().toString());
                     StringEntity entity = new StringEntity(jsonParams.toString());
                     AsyncHttpClient client = new AsyncHttpClient();
-                    client.post(getApplicationContext(), "http://192.168.1.72:5000/user/login", entity, "application/json",
+                    client.post(getApplicationContext(), apiUrl + URL_FEED, entity, "application/json",
                             new JsonHttpResponseHandler() {
                                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                                     Log.d(URL_FEED, "response raw: " + response.toString());
@@ -53,6 +55,9 @@ public class Login extends AppCompatActivity {
 
                                         Log.d(URL_FEED, "Gson converted to map: " + map.toString());
                                         Log.d(URL_FEED, "Session token: " + map.get("token"));
+                                        SharedPreferences.Editor editor = getSharedPreferences(sp, MODE_PRIVATE).edit();
+                                        editor.putString("token",map.get("token").toString());
+                                        editor.apply();
                                         if ((boolean) map.get("success")) {
                                             Toast.makeText(getApplicationContext(), "Welcome " + username.getText().toString(), Toast.LENGTH_SHORT).show();
                                             Intent intent = new Intent(Login.this, P2photo.class);

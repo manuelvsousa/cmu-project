@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.cmu.p2photo.util.Config;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -31,6 +32,7 @@ public class Sign_up extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
         Button btnSignUp = findViewById(R.id.btnSignUp_Signup);
+        final String apiUrl = Config.getConfigValue(this, "api_url");
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -43,7 +45,7 @@ public class Sign_up extends AppCompatActivity {
                     jsonParams.put("passwordConfirmation", password.getText().toString());
                     StringEntity entity = new StringEntity(jsonParams.toString());
                     AsyncHttpClient client = new AsyncHttpClient();
-                    client.post(getApplicationContext(), "http://192.168.1.72:5000/user/register", entity, "application/json",
+                    client.post(getApplicationContext(), apiUrl + URL_FEED, entity, "application/json",
                             new JsonHttpResponseHandler() {
                                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                                     Log.d(URL_FEED, "response raw: " + response.toString());
