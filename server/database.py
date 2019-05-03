@@ -23,11 +23,12 @@ class User(Base):
   id = Column(Integer, primary_key=True)
   username = Column(Unicode(40), unique=True)
   password = Column(Unicode(40))
-  drive = Column(Unicode(40))
+  dropbox = Column(Unicode(40))
 
   def __init__(self, username, password):
     self.username = username
     self.password = password
+    self.dropbox = ""
 
 class Album(Base):
   query = db_session.query_property()

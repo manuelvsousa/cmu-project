@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.cmu.p2photo.util.Config;
@@ -59,9 +60,24 @@ public class Login extends AppCompatActivity {
                                         editor.putString("token",map.get("token").toString());
                                         editor.apply();
                                         if ((boolean) map.get("success")) {
-                                            Toast.makeText(getApplicationContext(), "Welcome " + username.getText().toString(), Toast.LENGTH_SHORT).show();
-                                            Intent intent = new Intent(Login.this, P2photo.class);
-                                            startActivity(intent);
+                                            Switch switch3 = (Switch) findViewById(R.id.switch3);
+                                            if(!switch3.isChecked()){
+                                                if(map.get("dropbox").toString().equals("")){
+                                                    Toast.makeText(getApplicationContext(), "Welcomee " + username.getText().toString(), Toast.LENGTH_SHORT).show();
+                                                    Intent intent = new Intent(Login.this, Dropbox.class);
+                                                    startActivity(intent);
+                                                } else {
+                                                    editor.putString("dropbox",map.get("dropbox").toString());
+                                                    editor.apply();
+                                                    Toast.makeText(getApplicationContext(), "Welcome Back " + username.getText().toString(), Toast.LENGTH_SHORT).show();
+                                                    Intent intent = new Intent(Login.this, P2photo.class);
+                                                    startActivity(intent);
+                                                }
+                                            } else {
+                                                Toast.makeText(getApplicationContext(), "Welcome 1" + username.getText().toString(), Toast.LENGTH_SHORT).show();
+                                                Intent intent = new Intent(Login.this, WifiDirect.class);
+                                                startActivity(intent);
+                                            }
                                         } else {
                                             Toast.makeText(getApplicationContext(), "Huge Problem Occured", Toast.LENGTH_SHORT).show();
                                         }

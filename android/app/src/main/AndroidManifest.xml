@@ -22,11 +22,25 @@
         <activity android:name=".P2photo" />
         <activity android:name=".Sign_up" />
         <activity android:name=".Login" />
+        <activity android:name=".WifiDirect" />
+        <activity android:name=".Dropbox" />
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.dropbox.core.android.AuthActivity"
+            android:configChanges="orientation|keyboard"
+            android:launchMode="singleTask" >
+            <intent-filter>
+                <data android:scheme="db-3izhx7xtgnuua5m" />
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
     </application>

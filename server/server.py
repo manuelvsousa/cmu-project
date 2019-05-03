@@ -43,12 +43,14 @@ def addUser():
 
 
 @app.route('/user/register/drive', methods=['POST'])
-def addDrive():
+def addDropbox():
     token = str(request.json.get('token', ""))
-    token = str(request.json.get('drive', ""))
+    dropbox = str(request.json.get('dropbox', ""))
 
-    if(token == ""):
-        resp = jsonify(success=False, message="token is empty")
+    print token,dropbox
+
+    if(token == "" or dropbox == ""):
+        resp = jsonify(success=False, message="token or dropbox token is empty")
         return make_response(resp, 400)
 
     if db.Session.query.filter_by(token=token).count() != 1:
@@ -56,7 +58,7 @@ def addDrive():
         return make_response(resp, 404)
     s = db.Session.query.filter_by(token=token).first()
     u = db.User.query.filter_by(username=s.username).first()
-    u.drive = drive
+    u.dropbox = dropbox
     db.db_session.commit()
     resp = jsonify(success=True)
     return make_response(resp, 201)
@@ -103,8 +105,8 @@ def loginUser():
     s = db.Session(token, username, timestamp)
     db.db_session.add(s)
     db.db_session.commit()
-
-    resp = jsonify(success=True, token=token)
+    u = db.User.query.filter_by(username=s.username).first()
+    resp = jsonify(success=True, token=token, dropbox = u.dropbox)
     return make_response(resp, 201)
 
 

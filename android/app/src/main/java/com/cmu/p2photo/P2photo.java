@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.cmu.p2photo.util.Config;
@@ -25,6 +24,7 @@ import cz.msebera.android.httpclient.entity.StringEntity;
 
 public class P2photo extends AppCompatActivity {
     private static final String LOGOUT_URL_FEED = "user/logout";
+    private static final String TAG = "CLOUD";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,9 +48,12 @@ public class P2photo extends AppCompatActivity {
             }
         });
 
-        Button btnLogout = findViewById(R.id.LogOutButton);
+        Button btnLogout = findViewById(R.id.LogInButton);
         final String apiUrl = Config.getConfigValue(this, "api_url");
         final String sp = Config.getConfigValue(this, "shared_preferences");
+
+
+        // Logout Listener
         btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -59,7 +62,7 @@ public class P2photo extends AppCompatActivity {
                     SharedPreferences prefs = getSharedPreferences(sp, MODE_PRIVATE);
                     String token = prefs.getString("token", null);
                     if (token == null) {
-                        throw new RuntimeException("Token not found in Shared Preferences");
+                        throw new RuntimeException("Session Token not found in Shared Preferences");
                     }
                     jsonParams.put("token", token);
                     StringEntity entity = new StringEntity(jsonParams.toString());
