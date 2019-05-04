@@ -21,11 +21,10 @@
         <activity android:name=".FindUser" />
         <activity android:name=".P2photo" />
         <activity android:name=".Sign_up" />
-        <activity android:name=".Login" />
         <activity android:name=".WifiDirect" />
         <activity android:name=".Dropbox" />
         <activity android:name=".CreateAlbum" />
-
+        <activity android:name=".ListAlbums" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

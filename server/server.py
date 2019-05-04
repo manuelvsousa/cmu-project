@@ -46,7 +46,7 @@ def addUser():
 def addDropbox():
     token = str(request.json.get('token', ""))
     dropbox = str(request.json.get('dropbox', ""))
-
+    print "fodasse fodasse" 
     print token,dropbox
 
     if(token == "" or dropbox == ""):
@@ -73,24 +73,61 @@ def createAlbum():
     if(token == "" or albumName == ""):
         resp = jsonify(success=False, message="token or albumName is empty")
         return make_response(resp, 400)
-
     if db.Session.query.filter_by(token=token).count() != 1:
         resp = jsonify(success=False, message="token does not exist")
         return make_response(resp, 404)
-
     s = db.Session.query.filter_by(token=token).first()
     u = db.User.query.filter_by(username=s.username).first()
-
-    if db.Album.query.filter_by(album=albumName).count() != 1:
+    if db.Album.query.filter_by(album=albumName).count() >= 1:
         resp = jsonify(success=False, message="album already exists")
         return make_response(resp, 201) 
         
     a = db.Album(albumName, u.username, link)
-
+    db.db_session.add(a)
     db.db_session.commit()
     resp = jsonify(success=True)
     return make_response(resp, 201)
 
+
+
+@app.route('/album/check', methods=['POST'])
+def checkAlbum():
+    token = str(request.json.get('token', ""))
+    albumName = str(request.json.get('albumName', ""))
+    if(token == "" or albumName == ""):
+        resp = jsonify(success=False, message="token or albumName is empty")
+        return make_response(resp, 400)
+    if db.Session.query.filter_by(token=token).count() != 1:
+        resp = jsonify(success=False, message="token does not exist")
+        return make_response(resp, 404)
+    s = db.Session.query.filter_by(token=token).first()
+    u = db.User.query.filter_by(username=s.username).first()
+
+    if db.Album.query.filter_by(album=albumName).count() == 1:
+        if db.Album.query.filter_by(album=albumName,username=u.username).count() >= 1:
+            resp = jsonify(success=False, message="You are in this album already")
+        else:
+            resp = jsonify(success=False, message="album already exists")
+        return make_response(resp, 409) 
+        
+    resp = jsonify(success=True)
+    return make_response(resp, 201)
+
+@app.route('/album/list', methods=['POST'])
+def getAlbums():
+    token = str(request.json.get('token', ""))
+
+    if(token == ""):
+        resp = jsonify(success=False, message="token is empty")
+        return make_response(resp, 400)
+
+    if db.Session.query.filter_by(token=token).count() != 1:
+        resp = jsonify(success=False, message="token does not exist")
+        return make_response(resp, 404)
+    s = db.Session.query.filter_by(token=token).first()
+    albums = db.Album.query.filter_by(username=s.username)
+    resp = jsonify(success=True,albums = [album.album for album in albums])
+    return make_response(resp, 201)
 
 
 @app.route('/user/login', methods=['POST'])
@@ -109,6 +146,7 @@ def loginUser():
 
     token = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for _ in range(TOKEN_LEN))
+    print "generated token: ", token
     timestamp = time.time()
     s = db.Session(token, username, timestamp)
     db.db_session.add(s)

@@ -11,8 +11,6 @@ import android.widget.Toast;
 
 import com.cmu.p2photo.util.Config;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -57,7 +55,7 @@ public class Sign_up extends AppCompatActivity {
                                         Log.d(URL_FEED, "Gson converted to map: " + map.toString());
                                         if ((boolean) map.get("success")) {
                                             Toast.makeText(getApplicationContext(), "Registered with Success", Toast.LENGTH_SHORT).show();
-                                            Intent intent = new Intent(Sign_up.this, Login.class);
+                                            Intent intent = new Intent(Sign_up.this, MainActivity.class);
                                             startActivity(intent);
                                         } else {
                                             Toast.makeText(getApplicationContext(), "Huge Problem Occured", Toast.LENGTH_SHORT).show();

@@ -33,7 +33,8 @@ class User(Base):
 class Album(Base):
   query = db_session.query_property()
   __tablename__ = 'album'
-  album = Column(Unicode(40), unique=True, primary_key=True)
+  id = Column(Integer, primary_key=True)
+  album = Column(Unicode(40))
   username = Column(Unicode(40))
   url = Column(Unicode(100))
 

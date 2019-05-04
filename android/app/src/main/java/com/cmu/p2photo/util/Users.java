@@ -1,17 +1,10 @@
 package com.cmu.p2photo.util;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.Switch;
 import android.widget.Toast;
 
-import com.cmu.p2photo.Dropbox;
-import com.cmu.p2photo.Login;
-import com.cmu.p2photo.P2photo;
-import com.cmu.p2photo.R;
-import com.cmu.p2photo.WifiDirect;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;

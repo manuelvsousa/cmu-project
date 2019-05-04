@@ -27,6 +27,7 @@ import cz.msebera.android.httpclient.entity.StringEntity;
 
 public class CreateAlbum extends AppCompatActivity {
     private static final String URL_FEED = "album/create";
+    private static final String URL_FEED2 = "album/check";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +40,60 @@ public class CreateAlbum extends AppCompatActivity {
             public void onClick(View v) {
 
                 EditText albumname = findViewById(R.id.albumName);
+
+
+
+
+
+                /* check album status */
+                try {
+                    JSONObject jsonParams = new JSONObject();
+                    SharedPreferences prefs = getSharedPreferences(sp, MODE_PRIVATE);
+                    String token = prefs.getString("token", null);
+                    if (token == null) {
+                        throw new RuntimeException("Session Token not found in Shared Preferences");
+                    }
+
+                    jsonParams.put("token", token);
+                    jsonParams.put("albumName", albumname.getText().toString());
+                    StringEntity entity = new StringEntity(jsonParams.toString());
+                    AsyncHttpClient client = new AsyncHttpClient();
+                    client.post(getApplicationContext(), apiUrl + URL_FEED2, entity, "application/json",
+                            new JsonHttpResponseHandler() {
+                                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                                    Log.d(URL_FEED2, "response raw: " + response.toString());
+                                    try {
+                                        Gson gson = new Gson();
+                                        Map<String, Object> map = new HashMap<>();
+                                        map = (Map<String, Object>) gson.fromJson(response.toString(), map.getClass());
+
+                                        Log.d(URL_FEED2, "Gson converted to map: " + map.toString());
+                                        if ((boolean) map.get("success")) {
+                                            Toast.makeText(CreateAlbum.this, "Album Criado com Sucesso", Toast.LENGTH_SHORT)
+                                                    .show();
+                                        } else {
+                                                Toast.makeText(getApplicationContext(), "Huge Problem Occured", Toast.LENGTH_SHORT).show();
+                                        }
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+
+                                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                                    Gson gson = new Gson();
+                                    Map<String, Object> map = new HashMap<>();
+                                    map = (Map<String, Object>) gson.fromJson(errorResponse.toString(), map.getClass());
+                                    Toast.makeText(getApplicationContext(), map.get("message").toString(), Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(CreateAlbum.this, P2photo.class);
+                                    startActivity(intent);
+                                    return;
+                                }
+                            });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                /* end check album status */
+
 
                new CreateFileTask(getApplicationContext(), DropboxClientFactory.getClient(), new CreateFileTask.Callback() {
                     @Override
@@ -58,6 +113,7 @@ public class CreateAlbum extends AppCompatActivity {
                             jsonParams.put("token", token);
                             jsonParams.put("albumName", albumname.getText().toString());
                             jsonParams.put("link", result);
+                            Log.d("FODASSE",result);
                             StringEntity entity = new StringEntity(jsonParams.toString());
                             AsyncHttpClient client = new AsyncHttpClient();
                             client.post(getApplicationContext(), apiUrl + URL_FEED, entity, "application/json",

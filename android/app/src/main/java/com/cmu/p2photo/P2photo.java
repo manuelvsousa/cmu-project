@@ -71,7 +71,7 @@ public class P2photo extends AppCompatActivity {
                                         Log.d(LOGOUT_URL_FEED, "Gson converted to map: " + map.toString());
                                         if ((boolean) map.get("success")) {
                                             Toast.makeText(getApplicationContext(), "Logout Success", Toast.LENGTH_SHORT).show();
-                                            Intent intent = new Intent(P2photo.this, Login.class);
+                                            Intent intent = new Intent(P2photo.this, MainActivity.class);
                                             startActivity(intent);
                                         } else {
                                             Toast.makeText(getApplicationContext(), "Huge Problem Occured", Toast.LENGTH_SHORT).show();
@@ -101,6 +101,15 @@ public class P2photo extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(P2photo.this, CreateAlbum.class);
+                startActivity(intent);
+            }
+        });
+
+        Button listAlbums = findViewById(R.id.viewAlbums);
+        listAlbums.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(P2photo.this, ListAlbums.class);
                 startActivity(intent);
             }
         });

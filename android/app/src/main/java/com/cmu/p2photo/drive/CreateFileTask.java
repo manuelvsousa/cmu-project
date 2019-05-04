@@ -1,24 +1,17 @@
 package com.cmu.p2photo.drive;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.cmu.p2photo.drive.DropboxClientFactory;
-import com.cmu.p2photo.util.Config;
 import com.dropbox.core.v2.DbxClientV2;
-import com.dropbox.core.v2.filerequests.FileRequest;
 import com.dropbox.core.v2.files.CreateFolderErrorException;
-import com.dropbox.core.v2.files.CreateFolderResult;
 import com.dropbox.core.v2.files.FileMetadata;
-import com.dropbox.core.v2.files.FolderMetadata;
 import com.dropbox.core.v2.sharing.SharedLinkMetadata;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import static android.content.Context.MODE_PRIVATE;
 
 public class CreateFileTask extends AsyncTask<String, Void, String> {
 
@@ -55,25 +48,28 @@ public class CreateFileTask extends AsyncTask<String, Void, String> {
     @Override
     protected String doInBackground(String... params) {
         try {
-            CreateFolderResult folder = mDbxClient.files().createFolderV2(params[0]);
+            mDbxClient.files().createFolderV2(params[0]);
             String initialString = "";
             InputStream targetStream = new ByteArrayInputStream(initialString.getBytes());
             FileMetadata fr = mDbxClient.files().uploadBuilder(params[0] + "/catalog").uploadAndFinish(targetStream);
+        } catch (CreateFolderErrorException err) {
+            if (err.errorValue.isPath() && err.errorValue.getPathValue().isConflict()) {
+                Log.d("CARALHO","Something already exists at the path.");
+            } else {
+                Log.d("CARALHO","Another error occured");
+            }
+        } catch (Exception err) {
+            Log.d("CARALHO","Very bad error occured");
+        }
+        try{
             SharedLinkMetadata meta =  mDbxClient.sharing().createSharedLinkWithSettings(params[0] + "/catalog");
             String url = meta.getUrl();
             url = url.split("\\?")[0];
             url = url + "\\?raw=1";
             Log.d("FODASSE",url);
             return url;
-        } catch (CreateFolderErrorException err) {
-            if (err.errorValue.isPath() && err.errorValue.getPathValue().isConflict()) {
-                Log.d("CARALHO","Something already exists at the path.");
-                return params[0];
-            } else {
-                Log.d("CARALHO","Another error occured");
-            }
-        } catch (Exception err) {
-            Log.d("CARALHO","Very bad error occured");
+        }catch (Exception e){
+            e.printStackTrace();
         }
         return null;
     }
