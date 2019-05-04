@@ -67,18 +67,26 @@ def addDropbox():
 @app.route('/album/create', methods=['POST'])
 def createAlbum():
     token = str(request.json.get('token', ""))
-    token = str(request.json.get('drive', ""))
-
-    if(token == ""):
-        resp = jsonify(success=False, message="token is empty")
+    albumName = str(request.json.get('albumName', ""))
+    link = str(request.json.get('link', ""))
+    print token,albumName,link
+    if(token == "" or albumName == ""):
+        resp = jsonify(success=False, message="token or albumName is empty")
         return make_response(resp, 400)
 
     if db.Session.query.filter_by(token=token).count() != 1:
         resp = jsonify(success=False, message="token does not exist")
         return make_response(resp, 404)
+
     s = db.Session.query.filter_by(token=token).first()
     u = db.User.query.filter_by(username=s.username).first()
-    u.drive = drive
+
+    if db.Album.query.filter_by(album=albumName).count() != 1:
+        resp = jsonify(success=False, message="album already exists")
+        return make_response(resp, 201) 
+        
+    a = db.Album(albumName, u.username, link)
+
     db.db_session.commit()
     resp = jsonify(success=True)
     return make_response(resp, 201)
@@ -128,11 +136,16 @@ def logoutUser():
     return make_response(resp, 201)
 
 
-@app.route('/user/list', methods=['GET'])
+@app.route('/user/list', methods=['POST'])
 def listUser():
-    print repr(request.json)
+    token = str(request.json.get('token', ""))
+    print token
+    if db.Session.query.filter_by(token=token).count() != 1:
+        resp = jsonify(success=False, message="token does not exist")
+        return make_response(resp, 404)
     users = db.User.query.all()
-    return jsonify([user.username for user in users])
+    print [user.username for user in users]
+    return jsonify(users = [user.username for user in users], success=True)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)

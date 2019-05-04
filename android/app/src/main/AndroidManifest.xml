@@ -24,6 +24,7 @@
         <activity android:name=".Login" />
         <activity android:name=".WifiDirect" />
         <activity android:name=".Dropbox" />
+        <activity android:name=".CreateAlbum" />
 
         <activity android:name=".MainActivity">
             <intent-filter>

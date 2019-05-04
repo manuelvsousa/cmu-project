@@ -8,8 +8,8 @@
 
     <TextView
         android:id="@+id/textView8"
-        android:layout_width="138dp"
-        android:layout_height="79dp"
+        android:layout_width="230dp"
+        android:layout_height="0dp"
         android:layout_above="@+id/btnSign_main"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
@@ -19,34 +19,17 @@
         android:layout_marginTop="108dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
+        android:layout_marginBottom="182dp"
         android:password="false"
-        android:text="P2photo"
+        android:text="Cloud Version"
         android:textColor="@color/colorPrimary"
         android:textIsSelectable="false"
         android:textSize="36sp"
         app:fontFamily="casual"
+        app:layout_constraintBottom_toTopOf="@+id/createAlbum"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <EditText
-        android:id="@+id/UserP2Photo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="108dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Find user..."
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView8" />
 
     <Button
         android:id="@+id/btnViewP2photo"
@@ -57,13 +40,14 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
+        android:layout_marginBottom="247dp"
         android:text="View Albums"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnFindP2photo" />
+        app:layout_constraintTop_toBottomOf="@+id/createAlbum" />
 
     <Button
         android:id="@+id/LogInButton"
@@ -83,16 +67,13 @@
         app:layout_constraintTop_toBottomOf="@+id/btnViewP2photo" />
 
     <Button
-        android:id="@+id/btnFindP2photo"
+        android:id="@+id/createAlbum"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:text="Find"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/UserP2Photo" />
+        android:layout_marginBottom="9dp"
+        android:text="Create Album"
+        app:layout_constraintBottom_toTopOf="@+id/btnViewP2photo"
+        app:layout_constraintStart_toStartOf="@+id/btnViewP2photo"
+        app:layout_constraintTop_toBottomOf="@+id/textView8" />
+
 </android.support.constraint.ConstraintLayout>

@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.cmu.p2photo.drive.DropboxClientFactory;
+import com.cmu.p2photo.drive.PicassoClient;
 import com.cmu.p2photo.util.Config;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
@@ -30,27 +32,17 @@ public class P2photo extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_p2photo);
 
-        Button btnFind = findViewById(R.id.btnFindP2photo);
-        btnFind.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(P2photo.this, FindUser.class);
-                startActivity(intent);
-            }
-        });
-
-        Button btnViewAlbum = findViewById(R.id.btnViewP2photo);
-        btnViewAlbum.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(P2photo.this, ViewAlbum.class);
-                startActivity(intent);
-            }
-        });
-
         Button btnLogout = findViewById(R.id.LogInButton);
         final String apiUrl = Config.getConfigValue(this, "api_url");
         final String sp = Config.getConfigValue(this, "shared_preferences");
+        SharedPreferences prefs = getSharedPreferences(sp, MODE_PRIVATE);
+        String accessToken = prefs.getString("dropbox", null);
+        if (accessToken == null) {
+            throw new RuntimeException("Session Token not found in Shared Preferences");
+        }
+
+        DropboxClientFactory.init(accessToken);
+        PicassoClient.init(getApplicationContext(), DropboxClientFactory.getClient());
 
 
         // Logout Listener
@@ -101,5 +93,17 @@ public class P2photo extends AppCompatActivity {
                 }
             }
         });
+
+
+
+        Button createAlbum = findViewById(R.id.createAlbum);
+        createAlbum.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(P2photo.this, CreateAlbum.class);
+                startActivity(intent);
+            }
+        });
+
     }
 }
