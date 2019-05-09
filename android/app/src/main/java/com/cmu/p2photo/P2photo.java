@@ -13,7 +13,6 @@ import com.cmu.p2photo.drive.DropboxClientFactory;
 import com.cmu.p2photo.drive.PicassoClient;
 import com.cmu.p2photo.util.Config;
 import com.dropbox.core.android.AuthActivity;
-import com.dropbox.core.v2.auth.DbxUserAuthRequests;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -29,6 +28,7 @@ import cz.msebera.android.httpclient.entity.StringEntity;
 public class P2photo extends AppCompatActivity {
     private static final String LOGOUT_URL_FEED = "user/logout";
     private static final String TAG = "CLOUD";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,7 +101,6 @@ public class P2photo extends AppCompatActivity {
                 }
             }
         });
-
 
 
         Button createAlbum = findViewById(R.id.addUser);

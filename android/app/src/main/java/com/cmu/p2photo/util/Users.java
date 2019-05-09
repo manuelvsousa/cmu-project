@@ -22,17 +22,17 @@ public class Users extends AppCompatActivity {
     // static variable single_instance of type Singleton
     private static Users instance = null;
 
-    private Users() { }
+    private Users() {
+    }
 
-    public static Users getInstance()
-    {
+    public static Users getInstance() {
         if (instance == null)
             instance = new Users();
 
         return instance;
     }
 
-    public void getUsers(){
+    public void getUsers() {
         final String apiUrl = Config.getConfigValue(getApplicationContext(), "api_url");
         final String sp = Config.getConfigValue(getApplicationContext(), "shared_preferences");
 

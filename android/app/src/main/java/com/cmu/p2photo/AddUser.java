@@ -10,8 +10,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.cmu.p2photo.drive.CreateFileTask;
-import com.cmu.p2photo.drive.DropboxClientFactory;
 import com.cmu.p2photo.util.Config;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
@@ -27,6 +25,7 @@ import cz.msebera.android.httpclient.entity.StringEntity;
 
 public class AddUser extends AppCompatActivity {
     private static final String URL_FEED = "album/user/add";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,7 +50,7 @@ public class AddUser extends AppCompatActivity {
 
                     jsonParams.put("token", token);
                     jsonParams.put("user", user.getText().toString());
-                    jsonParams.put("albumName",album);
+                    jsonParams.put("albumName", album);
                     StringEntity entity = new StringEntity(jsonParams.toString());
                     AsyncHttpClient client = new AsyncHttpClient();
                     client.post(getApplicationContext(), apiUrl + URL_FEED, entity, "application/json",

@@ -1,12 +1,9 @@
 package com.cmu.p2photo;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -28,7 +25,7 @@ import cz.msebera.android.httpclient.entity.StringEntity;
 
 public class ShowUserAlbums extends AppCompatActivity {
     private static final String URL_FEED = "user/album/list";
-    ListView listView ;
+    ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,7 +88,7 @@ public class ShowUserAlbums extends AppCompatActivity {
         /* end get albuns from user */
     }
 
-    void callback(List<String> users){
+    void callback(List<String> users) {
 
         // Initialize a new ArrayAdapter
         ArrayAdapter<String> adapter = new ArrayAdapter(

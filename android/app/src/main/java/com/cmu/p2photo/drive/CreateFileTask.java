@@ -21,11 +21,6 @@ public class CreateFileTask extends AsyncTask<String, Void, String> {
     private final Callback mCallback;
     private Exception mException;
 
-    public interface Callback {
-        void onUploadComplete(String result);
-        void onError(Exception e);
-    }
-
     public CreateFileTask(Context context, DbxClientV2 dbxClient, Callback callback) {
         mContext = context;
         mDbxClient = dbxClient;
@@ -44,7 +39,6 @@ public class CreateFileTask extends AsyncTask<String, Void, String> {
         }
     }
 
-
     @Override
     protected String doInBackground(String... params) {
         try {
@@ -54,22 +48,29 @@ public class CreateFileTask extends AsyncTask<String, Void, String> {
             FileMetadata fr = mDbxClient.files().uploadBuilder(params[0] + "/catalog").uploadAndFinish(targetStream);
         } catch (CreateFolderErrorException err) {
             if (err.errorValue.isPath() && err.errorValue.getPathValue().isConflict()) {
-                Log.d("P2PHOTO","Something already exists at the path.");
+                Log.d("P2PHOTO", "Something already exists at the path.");
             } else {
-                Log.d("P2PHOTO","Another error occured");
+                Log.d("P2PHOTO", "Another error occured");
             }
         } catch (Exception err) {
-            Log.d("P2PHOTO","Very bad error occured");
+            Log.d("P2PHOTO", "Very bad error occured");
         }
-        try{
-            SharedLinkMetadata meta =  mDbxClient.sharing().createSharedLinkWithSettings(params[0] + "/catalog");
+        try {
+            SharedLinkMetadata meta = mDbxClient.sharing().createSharedLinkWithSettings(params[0] + "/catalog");
             String url = meta.getUrl();
             url = url.split("\\?")[0];
             url = url + "\\?raw=1";
             return url;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+
+    public interface Callback {
+        void onUploadComplete(String result);
+
+        void onError(Exception e);
     }
 }

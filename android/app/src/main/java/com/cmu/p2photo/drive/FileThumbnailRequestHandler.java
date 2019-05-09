@@ -18,7 +18,7 @@ import okio.Okio;
 
 public class FileThumbnailRequestHandler extends RequestHandler {
 
-    private static final String SCHEME =  "dropbox";
+    private static final String SCHEME = "dropbox";
     private static final String HOST = "dropbox";
     private final DbxClientV2 mDbxClient;
 

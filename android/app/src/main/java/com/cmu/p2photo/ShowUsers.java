@@ -1,33 +1,13 @@
 package com.cmu.p2photo;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.DocumentsContract;
-import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.CursorLoader;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.cmu.p2photo.drive.DropboxClientFactory;
-import com.cmu.p2photo.drive.UploadFileTask;
 import com.cmu.p2photo.util.Config;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
@@ -35,11 +15,6 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +25,7 @@ import cz.msebera.android.httpclient.entity.StringEntity;
 
 public class ShowUsers extends AppCompatActivity {
     private static final String URL_FEED = "album/user/list";
-    ListView listView ;
+    ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,7 +88,7 @@ public class ShowUsers extends AppCompatActivity {
         /* end get albuns from user */
     }
 
-    void callback(List<String> users){
+    void callback(List<String> users) {
 
         // Initialize a new ArrayAdapter
         ArrayAdapter<String> adapter = new ArrayAdapter(

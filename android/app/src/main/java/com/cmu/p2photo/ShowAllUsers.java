@@ -28,7 +28,7 @@ import cz.msebera.android.httpclient.entity.StringEntity;
 
 public class ShowAllUsers extends AppCompatActivity {
     private static final String URL_FEED = "user/list";
-    ListView listView ;
+    ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +90,7 @@ public class ShowAllUsers extends AppCompatActivity {
         /* end get albuns from user */
     }
 
-    void callback(List<String> users){
+    void callback(List<String> users) {
 
         // Initialize a new ArrayAdapter
         ArrayAdapter<String> adapter = new ArrayAdapter(
@@ -112,10 +112,10 @@ public class ShowAllUsers extends AppCompatActivity {
                                     int position, long id) {
 
                 // ListView Clicked item index
-                int itemPosition     = position;
+                int itemPosition = position;
 
                 // ListView Clicked item value
-                String  itemValue    = (String) listView.getItemAtPosition(position);
+                String itemValue = (String) listView.getItemAtPosition(position);
 
                 Intent intent = new Intent(ShowAllUsers.this, ShowUserAlbums.class);
                 intent.putExtra("user", itemValue);

@@ -10,8 +10,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.cmu.p2photo.drive.DropboxClientFactory;
 import com.cmu.p2photo.drive.CreateFileTask;
+import com.cmu.p2photo.drive.DropboxClientFactory;
 import com.cmu.p2photo.util.Config;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
@@ -28,6 +28,7 @@ import cz.msebera.android.httpclient.entity.StringEntity;
 public class CreateAlbum extends AppCompatActivity {
     private static final String URL_FEED = "album/create";
     private static final String URL_FEED2 = "album/check";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,7 +70,7 @@ public class CreateAlbum extends AppCompatActivity {
 
                                         Log.d(URL_FEED2, "Gson converted to map: " + map.toString());
                                         if (!(boolean) map.get("success")) {
-                                                Toast.makeText(getApplicationContext(), "Huge Problem Occured", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(getApplicationContext(), "Huge Problem Occured", Toast.LENGTH_SHORT).show();
                                         } else {
                                             EditText albumname = findViewById(R.id.userName);
                                             new CreateFileTask(getApplicationContext(), DropboxClientFactory.getClient(), new CreateFileTask.Callback() {
@@ -103,7 +104,7 @@ public class CreateAlbum extends AppCompatActivity {
                                                                                 Toast.makeText(CreateAlbum.this, "Album Criado com Sucesso", Toast.LENGTH_SHORT)
                                                                                         .show();
                                                                             } else {
-                                                                                if(map.get("message").equals("album already exists")){
+                                                                                if (map.get("message").equals("album already exists")) {
                                                                                     //ignore
                                                                                 } else {
                                                                                     Toast.makeText(getApplicationContext(), "Huge Problem Occured", Toast.LENGTH_SHORT).show();

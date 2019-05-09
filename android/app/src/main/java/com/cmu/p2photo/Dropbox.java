@@ -9,11 +9,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.cmu.p2photo.drive.DropboxClientFactory;
-import com.cmu.p2photo.drive.PicassoClient;
 import com.cmu.p2photo.util.Config;
 import com.dropbox.core.android.Auth;
-import com.dropbox.core.android.AuthActivity;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -28,6 +25,7 @@ import cz.msebera.android.httpclient.entity.StringEntity;
 
 public class Dropbox extends AppCompatActivity {
     private static final String URL_FEED = "user/register/drive";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,7 +49,7 @@ public class Dropbox extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences(sp, MODE_PRIVATE);
         String accessToken = Auth.getOAuth2Token();
         SharedPreferences.Editor editor = getSharedPreferences(sp, MODE_PRIVATE).edit();
-        editor.putString("dropbox",accessToken);
+        editor.putString("dropbox", accessToken);
         editor.apply();
         try {
             AsyncHttpClient client = new AsyncHttpClient();
@@ -84,6 +82,7 @@ public class Dropbox extends AppCompatActivity {
                                 e.printStackTrace();
                             }
                         }
+
                         public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                             Gson gson = new Gson();
                             Map<String, Object> map = new HashMap<>();
