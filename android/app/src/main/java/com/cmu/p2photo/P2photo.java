@@ -12,6 +12,8 @@ import android.widget.Toast;
 import com.cmu.p2photo.drive.DropboxClientFactory;
 import com.cmu.p2photo.drive.PicassoClient;
 import com.cmu.p2photo.util.Config;
+import com.dropbox.core.android.AuthActivity;
+import com.dropbox.core.v2.auth.DbxUserAuthRequests;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -70,9 +72,15 @@ public class P2photo extends AppCompatActivity {
 
                                         Log.d(LOGOUT_URL_FEED, "Gson converted to map: " + map.toString());
                                         if ((boolean) map.get("success")) {
+                                            SharedPreferences prefs = getSharedPreferences(sp, MODE_PRIVATE); //clean all previous credentials
+                                            prefs.edit().clear();
+                                            prefs.edit().commit();
+                                            AuthActivity.result = null;
+                                            DropboxClientFactory.destroy();
                                             Toast.makeText(getApplicationContext(), "Logout Success", Toast.LENGTH_SHORT).show();
                                             Intent intent = new Intent(P2photo.this, MainActivity.class);
                                             startActivity(intent);
+                                            finish();
                                         } else {
                                             Toast.makeText(getApplicationContext(), "Huge Problem Occured", Toast.LENGTH_SHORT).show();
                                         }
@@ -88,7 +96,6 @@ public class P2photo extends AppCompatActivity {
                                     Toast.makeText(getApplicationContext(), map.get("message").toString(), Toast.LENGTH_SHORT).show();
                                 }
                             });
-                    prefs.edit().clear().commit();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

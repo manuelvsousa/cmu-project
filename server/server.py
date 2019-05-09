@@ -193,6 +193,10 @@ def addUserAlbum():
         resp = jsonify(success=False, message=user + " does not have permition to add users in album: " + albumName)
         return make_response(resp, 403)
 
+    if(s.username == user):
+        resp = jsonify(success=False, message="You are already in this album")
+        return make_response(resp, 400)     
+
     if db.User.query.filter_by(username=user).count() != 1:
         print "caralhooooooooo"
         resp = jsonify(success=False, message=user + " does not exist")

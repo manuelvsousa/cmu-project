@@ -13,6 +13,7 @@ import com.cmu.p2photo.drive.DropboxClientFactory;
 import com.cmu.p2photo.drive.PicassoClient;
 import com.cmu.p2photo.util.Config;
 import com.dropbox.core.android.Auth;
+import com.dropbox.core.android.AuthActivity;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -33,7 +34,7 @@ public class Dropbox extends AppCompatActivity {
         setContentView(R.layout.activity_dropbox);
         final String dropbox_key = Config.getConfigValue(this, "dropbox_key");
         Button loginButton = findViewById(R.id.LogInButton);
-
+        Log.d("PASSOU", "PASSOU AQUI");
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -49,7 +50,9 @@ public class Dropbox extends AppCompatActivity {
         final String sp = Config.getConfigValue(this, "shared_preferences");
         SharedPreferences prefs = getSharedPreferences(sp, MODE_PRIVATE);
         String accessToken = Auth.getOAuth2Token();
-
+        SharedPreferences.Editor editor = getSharedPreferences(sp, MODE_PRIVATE).edit();
+        editor.putString("dropbox",accessToken);
+        editor.apply();
         try {
             AsyncHttpClient client = new AsyncHttpClient();
             JSONObject jsonParams = new JSONObject();
@@ -72,6 +75,7 @@ public class Dropbox extends AppCompatActivity {
                                 if ((boolean) map.get("success")) {
                                     Intent intent = new Intent(Dropbox.this, P2photo.class);
                                     startActivity(intent);
+                                    finish();
                                 } else {
                                     Toast.makeText(getApplicationContext(), "Not Welcome", Toast.LENGTH_SHORT).show();
                                     Log.d(URL_FEED, "Could not save dropbox token in server" + map.get("token"));

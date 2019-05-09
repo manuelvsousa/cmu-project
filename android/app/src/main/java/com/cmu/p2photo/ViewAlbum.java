@@ -220,18 +220,12 @@ public class ViewAlbum extends AppCompatActivity {
                     final String path = getRealPathFromURI_API19(getApplicationContext(),selectedImageUri);
                     if (path != null) {
                         File f = new File(path);
-                        Log.d("CARALHO", path);
-                        Log.d("NAO PODE", path);
-                        Log.d("FODASSE", f.getName());
-                        Log.d("FODASSE", f.getAbsolutePath());
                         selectedImageUri = Uri.fromFile(f);
                     }
 
 
                     final String album = getIntent().getStringExtra("album");
                     // Set the image in ImageView
-                    Log.d("FODASSE", selectedImageUri.toString());
-                    Log.d("FODASSE", selectedImageUri.toString() + "caralho");
                     new UploadFileTask(getApplicationContext(), DropboxClientFactory.getClient(), new UploadFileTask.Callback() {
                         @Override
                         public void onUploadComplete(String result) {
@@ -240,7 +234,7 @@ public class ViewAlbum extends AppCompatActivity {
 
                         @Override
                         public void onError(Exception e) {
-                            Log.e("FODASSE", "Failed to upload file.", e);
+                            Log.e("P2PHOTO", "Failed to upload file.", e);
                         }
                     }).execute(path,album,getApplicationContext().getFilesDir().getPath());
 

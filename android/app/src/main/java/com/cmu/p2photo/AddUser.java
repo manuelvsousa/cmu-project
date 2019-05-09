@@ -83,6 +83,7 @@ public class AddUser extends AppCompatActivity {
                                     Intent intent = new Intent(AddUser.this, ViewAlbum.class);
                                     intent.putExtra("album", album);
                                     startActivity(intent);
+                                    finish();
                                     return;
                                 }
                             });
@@ -94,6 +95,7 @@ public class AddUser extends AppCompatActivity {
                 Intent intent = new Intent(AddUser.this, ViewAlbum.class);
                 intent.putExtra("album", album);
                 startActivity(intent);
+                finish();
 
             }
         });

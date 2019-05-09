@@ -72,10 +72,10 @@ public class ListAlbums extends AppCompatActivity {
                                 map = (Map<String, Object>) gson.fromJson(response.toString(), map.getClass());
                                 Log.d(URL_FEED, "Gson converted to map: " + map.toString());
 
-                                List<String> asd = (List<String>) map.get("albums");
+                                List<String> albums = (List<String>) map.get("albums");
 
                                 if ((boolean) map.get("success")) {
-                                    callback(asd);
+                                    callback(albums);
                                 } else {
                                     Toast.makeText(getApplicationContext(), "Huge Problem Occured", Toast.LENGTH_SHORT).show();
                                 }

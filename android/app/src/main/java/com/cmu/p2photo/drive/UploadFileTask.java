@@ -80,8 +80,6 @@ public class UploadFileTask extends AsyncTask<String, Void, String> {
             try {
                 File asd = new File(params[0]);
 
-                Log.d("FODASSE",asd.toString());
-                Log.d("FODASSE",fileName);
                 InputStream inputStream = new FileInputStream(asd);
                 mDbxClient.files().uploadBuilder(fileName)
                         .withMode(WriteMode.OVERWRITE)

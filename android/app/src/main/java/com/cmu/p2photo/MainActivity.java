@@ -57,29 +57,30 @@ public class MainActivity extends AppCompatActivity {
                                         Log.d(URL_FEED, "Gson converted to map: " + map.toString());
                                         Log.d(URL_FEED, "Session token: " + map.get("token"));
                                         SharedPreferences.Editor editor = getSharedPreferences(sp, MODE_PRIVATE).edit();
+                                        editor.clear().commit();
                                         editor.putString("token",map.get("token").toString());
                                         editor.apply();
                                         if ((boolean) map.get("success")) {
                                             Switch switch3 = (Switch) findViewById(R.id.switch3);
                                             if(!switch3.isChecked()){
                                                 if(map.get("dropbox").toString().equals("")){
-                                                    Log.d("FODASSSE", "entrei1");
-                                                    Toast.makeText(getApplicationContext(), "Welcomee " + username.getText().toString(), Toast.LENGTH_SHORT).show();
+                                                    Toast.makeText(getApplicationContext(), "Welcome " + username.getText().toString(), Toast.LENGTH_SHORT).show();
                                                     Intent intent = new Intent(MainActivity.this, Dropbox.class);
                                                     startActivity(intent);
+                                                    finish();
                                                 } else {
-                                                    Log.d("FODASSSE", "entrei2");
                                                     editor.putString("dropbox",map.get("dropbox").toString());
                                                     editor.apply();
                                                     Toast.makeText(getApplicationContext(), "Welcome Back " + username.getText().toString(), Toast.LENGTH_SHORT).show();
                                                     Intent intent = new Intent(MainActivity.this, P2photo.class);
                                                     startActivity(intent);
+                                                    finish();
                                                 }
                                             } else {
-                                                Log.d("FODASSSE", "entrei3");
                                                 Toast.makeText(getApplicationContext(), "Welcome 1" + username.getText().toString(), Toast.LENGTH_SHORT).show();
                                                 Intent intent = new Intent(MainActivity.this, WifiDirect.class);
                                                 startActivity(intent);
+                                                finish();
                                             }
                                         } else {
                                             Toast.makeText(getApplicationContext(), "Huge Problem Occured", Toast.LENGTH_SHORT).show();

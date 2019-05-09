@@ -16,7 +16,6 @@
         android:usesCleartextTraffic="true"
         android:theme="@style/AppTheme">
         <activity android:name=".AddUserToAlbum"></activity>
-        <activity android:name=".Album" />
         <activity android:name=".ViewAlbum" />
         <activity android:name=".FindUser" />
         <activity android:name=".P2photo" />
