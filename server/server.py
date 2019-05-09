@@ -201,11 +201,11 @@ def addUserAlbum():
         resp = jsonify(success=False, message="You are already in this album")
         return make_response(resp, 400)
 
-    if db.User.query.filter_by(username=user).count() >= 1:
+    if db.User.query.filter_by(username=user).count() != 1:
         resp = jsonify(success=False, message=user + " does not exist")
         return make_response(resp, 404)
 
-    if db.Album.query.filter_by(username=user, album=albumName).count() != 1:
+    if db.Album.query.filter_by(username=user, album=albumName).count() >= 1:
         resp = jsonify(success=False, message=user +
                        " already in album: " + albumName)
         return make_response(resp, 400)
