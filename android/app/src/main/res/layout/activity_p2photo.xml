@@ -14,11 +14,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
         android:layout_marginTop="108dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
         android:layout_marginBottom="182dp"
         android:password="false"
         android:text="Cloud Version"
@@ -26,7 +22,7 @@
         android:textIsSelectable="false"
         android:textSize="36sp"
         app:fontFamily="casual"
-        app:layout_constraintBottom_toTopOf="@+id/createAlbum"
+        app:layout_constraintBottom_toTopOf="@+id/addUser"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -38,16 +34,13 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="247dp"
+        android:layout_marginEnd="2dp"
+        android:layout_marginRight="2dp"
+        android:layout_marginBottom="11dp"
         android:text="View Albums"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/createAlbum" />
+        app:layout_constraintBottom_toTopOf="@+id/showUsersAlbums"
+        app:layout_constraintEnd_toEndOf="@+id/addUser"
+        app:layout_constraintTop_toBottomOf="@+id/addUser" />
 
     <Button
         android:id="@+id/LogInButton"
@@ -56,24 +49,45 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
+        android:layout_marginBottom="94dp"
         android:text="Logout"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/logButton" />
+
+    <Button
+        android:id="@+id/addUser"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="33dp"
+        android:layout_marginLeft="33dp"
+        android:layout_marginBottom="10dp"
+        android:text="Create Album"
+        app:layout_constraintBottom_toTopOf="@+id/viewAlbums"
+        app:layout_constraintStart_toStartOf="@+id/showUsersAlbums"
+        app:layout_constraintTop_toBottomOf="@+id/textView8" />
+
+    <Button
+        android:id="@+id/showUsersAlbums"
+        android:layout_width="216dp"
+        android:layout_height="53dp"
+        android:layout_marginEnd="82dp"
+        android:layout_marginRight="82dp"
+        android:layout_marginBottom="7dp"
+        android:text="Show Users Albums"
+        app:layout_constraintBottom_toTopOf="@+id/logButton"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/viewAlbums" />
 
     <Button
-        android:id="@+id/createAlbum"
+        android:id="@+id/logButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="9dp"
-        android:text="Create Album"
-        app:layout_constraintBottom_toTopOf="@+id/viewAlbums"
-        app:layout_constraintStart_toStartOf="@+id/viewAlbums"
-        app:layout_constraintTop_toBottomOf="@+id/textView8" />
+        android:text="Logs"
+        app:layout_constraintBottom_toTopOf="@+id/LogInButton"
+        app:layout_constraintStart_toStartOf="@+id/LogInButton"
+        app:layout_constraintTop_toBottomOf="@+id/showUsersAlbums" />
 
 </android.support.constraint.ConstraintLayout>

@@ -130,6 +130,80 @@ def getAlbums():
     return make_response(resp, 201)
 
 
+@app.route('/album/user/list', methods=['POST'])
+def getAlbumsUsers():
+    token = str(request.json.get('token', ""))
+    albumName = str(request.json.get('albumName', ""))
+    if(token == "" or albumName == ""):
+        resp = jsonify(success=False, message="token or albumName is empty")
+        return make_response(resp, 400)
+    if db.Session.query.filter_by(token=token).count() != 1:
+        resp = jsonify(success=False, message="token does not exist")
+        return make_response(resp, 404)
+
+    s = db.Session.query.filter_by(token=token).first()
+    u = db.User.query.filter_by(username=s.username).first()
+
+    if db.Album.query.filter_by(username=s.username,album=albumName).count() != 1:
+        resp = jsonify(success=False, message=s.username + " does not have permition to check users in album: " + albumName)
+        return make_response(resp, 403)
+
+    albums = db.Album.query.filter_by(album=albumName)
+    print [album.username for album in albums]
+    return jsonify(users = [album.username for album in albums], success=True)
+
+
+
+@app.route('/user/album/list', methods=['POST'])
+def getUserAlbums():
+    token = str(request.json.get('token', ""))
+    user = str(request.json.get('user', ""))
+    print token,user
+    if(token == "" or user == ""):
+        resp = jsonify(success=False, message="token or user is empty")
+        return make_response(resp, 400)
+
+    if db.Session.query.filter_by(token=token).count() != 1:
+        resp = jsonify(success=False, message="token does not exist")
+        return make_response(resp, 404)
+
+    s = db.Session.query.filter_by(token=token).first()
+    u = db.User.query.filter_by(username=s.username).first()
+
+    albums = db.Album.query.filter_by(username=user)
+    return jsonify(albums = [album.album for album in albums], success=True)
+
+@app.route('/album/user/add', methods=['POST'])
+def addUserAlbum():
+    token = str(request.json.get('token', ""))
+    user = str(request.json.get('user', ""))
+    albumName = str(request.json.get('albumName', ""))
+    print token,user,albumName
+    if(token == "" or user == ""):
+        resp = jsonify(success=False, message="token or albumName is empty")
+        return make_response(resp, 400)
+    if db.Session.query.filter_by(token=token).count() != 1:
+        resp = jsonify(success=False, message="token does not exist")
+        return make_response(resp, 404)
+
+    s = db.Session.query.filter_by(token=token).first()
+    u = db.User.query.filter_by(username=s.username).first()
+
+    if db.Album.query.filter_by(username=s.username,album=albumName).count() != 1:
+        resp = jsonify(success=False, message=user + " does not have permition to add users in album: " + albumName)
+        return make_response(resp, 403)
+
+    if db.User.query.filter_by(username=user).count() != 1:
+        print "caralhooooooooo"
+        resp = jsonify(success=False, message=user + " does not exist")
+        return make_response(resp, 404)
+
+    a = db.Album(albumName, user, "")
+    db.db_session.add(a)
+    db.db_session.commit()
+    return jsonify(success=True)
+
+
 @app.route('/user/login', methods=['POST'])
 def loginUser():
     username = str(request.json.get('username', ""))

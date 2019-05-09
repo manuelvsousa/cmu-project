@@ -6,18 +6,27 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.dropbox.core.DbxDownloader;
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.CreateFolderErrorException;
 import com.dropbox.core.v2.files.FileMetadata;
+import com.dropbox.core.v2.files.GetMetadataErrorException;
 import com.dropbox.core.v2.files.WriteMode;
 import com.dropbox.core.v2.sharing.SharedLinkMetadata;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.nio.file.Files;
 
 
 public class UploadFileTask extends AsyncTask<String, Void, String> {
@@ -89,11 +98,60 @@ public class UploadFileTask extends AsyncTask<String, Void, String> {
             String url = meta.getUrl();
             url = url.split("\\?")[0];
             url = url + "\\?raw=1";
-            Log.d("FODASSE",url);
+            String downloadFileName = params[2] + "/tmpcatalog";
+            File catalogtmbpfile = new File(downloadFileName);
+            catalogtmbpfile.createNewFile();
+            OutputStream outputStream = new FileOutputStream(downloadFileName);
+
+
+            try {
+                mDbxClient.files().getMetadata("/" + params[1] + "/catalog");
+            } catch (GetMetadataErrorException e){
+                if (e.errorValue.isPath() && e.errorValue.getPathValue().isNotFound()) {
+                    System.out.println("File not found.");
+                } else {
+                    throw e;
+                }
+            }
+
+
+
+            mDbxClient.files().download("/" + params[1] + "/catalog")
+                    .download(outputStream);
+
+            String initialString = getString(downloadFileName)  + "," + url;
+            InputStream targetStream = new ByteArrayInputStream(initialString.getBytes());
+            FileMetadata fr = mDbxClient.files().uploadBuilder("/" + params[1] + "/catalog").withMode(WriteMode.OVERWRITE).uploadAndFinish(targetStream);
+
+
+            outputStream = new FileOutputStream(downloadFileName);
+            mDbxClient.files().download("/" + params[1] + "/catalog")
+                    .download(outputStream);
+            catalogtmbpfile.delete();
             return url;
         }catch (Exception e){
             e.printStackTrace();
         }
         return null;
+    }
+
+
+    private String getString(String path){
+        String aBuffer = "";
+        try {
+            File myFile = new File(path);
+            FileInputStream fIn = new FileInputStream(myFile);
+            BufferedReader myReader = new BufferedReader(new InputStreamReader(fIn));
+            String aDataRow = "";
+            while ((aDataRow = myReader.readLine()) != null) {
+                aBuffer += aDataRow;
+            }
+            myReader.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return aBuffer;
     }
 }

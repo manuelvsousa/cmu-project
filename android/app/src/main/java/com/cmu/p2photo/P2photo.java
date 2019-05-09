@@ -88,6 +88,7 @@ public class P2photo extends AppCompatActivity {
                                     Toast.makeText(getApplicationContext(), map.get("message").toString(), Toast.LENGTH_SHORT).show();
                                 }
                             });
+                    prefs.edit().clear().commit();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -96,7 +97,7 @@ public class P2photo extends AppCompatActivity {
 
 
 
-        Button createAlbum = findViewById(R.id.createAlbum);
+        Button createAlbum = findViewById(R.id.addUser);
         createAlbum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,6 +114,16 @@ public class P2photo extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        Button showUsersAlbums = findViewById(R.id.showUsersAlbums);
+        showUsersAlbums.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(P2photo.this, ShowAllUsers.class);
+                startActivity(intent);
+            }
+        });
+
 
     }
 }

@@ -8,9 +8,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Switch;
 import android.widget.Toast;
 
+import com.cmu.p2photo.drive.CreateFileTask;
+import com.cmu.p2photo.drive.DropboxClientFactory;
 import com.cmu.p2photo.util.Config;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
@@ -24,25 +25,33 @@ import java.util.Map;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.entity.StringEntity;
 
-public class MainActivity extends AppCompatActivity {
-    private static final String URL_FEED = "user/login";
+public class AddUser extends AppCompatActivity {
+    private static final String URL_FEED = "album/user/add";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        Button btnLogin = findViewById(R.id.loginButton);
+        setContentView(R.layout.activity_add_user);
         final String apiUrl = Config.getConfigValue(this, "api_url");
         final String sp = Config.getConfigValue(this, "shared_preferences");
-        btnLogin.setOnClickListener(new View.OnClickListener() {
+        Button btnFind = findViewById(R.id.addUser);
+        final String album = getIntent().getStringExtra("album");
+        btnFind.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final EditText username = findViewById(R.id.LoginUsername);
-                EditText password = findViewById(R.id.LoginPassword);
+
+                EditText user = findViewById(R.id.userName);
+
                 try {
                     JSONObject jsonParams = new JSONObject();
-                    jsonParams.put("username", username.getText().toString());
-                    jsonParams.put("password", password.getText().toString());
+                    SharedPreferences prefs = getSharedPreferences(sp, MODE_PRIVATE);
+                    String token = prefs.getString("token", null);
+                    if (token == null) {
+                        throw new RuntimeException("Session Token not found in Shared Preferences");
+                    }
+
+                    jsonParams.put("token", token);
+                    jsonParams.put("user", user.getText().toString());
+                    jsonParams.put("albumName",album);
                     StringEntity entity = new StringEntity(jsonParams.toString());
                     AsyncHttpClient client = new AsyncHttpClient();
                     client.post(getApplicationContext(), apiUrl + URL_FEED, entity, "application/json",
@@ -55,32 +64,9 @@ public class MainActivity extends AppCompatActivity {
                                         map = (Map<String, Object>) gson.fromJson(response.toString(), map.getClass());
 
                                         Log.d(URL_FEED, "Gson converted to map: " + map.toString());
-                                        Log.d(URL_FEED, "Session token: " + map.get("token"));
-                                        SharedPreferences.Editor editor = getSharedPreferences(sp, MODE_PRIVATE).edit();
-                                        editor.putString("token",map.get("token").toString());
-                                        editor.apply();
                                         if ((boolean) map.get("success")) {
-                                            Switch switch3 = (Switch) findViewById(R.id.switch3);
-                                            if(!switch3.isChecked()){
-                                                if(map.get("dropbox").toString().equals("")){
-                                                    Log.d("FODASSSE", "entrei1");
-                                                    Toast.makeText(getApplicationContext(), "Welcomee " + username.getText().toString(), Toast.LENGTH_SHORT).show();
-                                                    Intent intent = new Intent(MainActivity.this, Dropbox.class);
-                                                    startActivity(intent);
-                                                } else {
-                                                    Log.d("FODASSSE", "entrei2");
-                                                    editor.putString("dropbox",map.get("dropbox").toString());
-                                                    editor.apply();
-                                                    Toast.makeText(getApplicationContext(), "Welcome Back " + username.getText().toString(), Toast.LENGTH_SHORT).show();
-                                                    Intent intent = new Intent(MainActivity.this, P2photo.class);
-                                                    startActivity(intent);
-                                                }
-                                            } else {
-                                                Log.d("FODASSSE", "entrei3");
-                                                Toast.makeText(getApplicationContext(), "Welcome 1" + username.getText().toString(), Toast.LENGTH_SHORT).show();
-                                                Intent intent = new Intent(MainActivity.this, WifiDirect.class);
-                                                startActivity(intent);
-                                            }
+                                            Toast.makeText(AddUser.this, "User added to album", Toast.LENGTH_SHORT)
+                                                    .show();
                                         } else {
                                             Toast.makeText(getApplicationContext(), "Huge Problem Occured", Toast.LENGTH_SHORT).show();
                                         }
@@ -94,23 +80,24 @@ public class MainActivity extends AppCompatActivity {
                                     Map<String, Object> map = new HashMap<>();
                                     map = (Map<String, Object>) gson.fromJson(errorResponse.toString(), map.getClass());
                                     Toast.makeText(getApplicationContext(), map.get("message").toString(), Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(AddUser.this, ViewAlbum.class);
+                                    intent.putExtra("album", album);
+                                    startActivity(intent);
+                                    return;
                                 }
                             });
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }
-        });
 
 
-        Button signUpButton = findViewById(R.id.SignUpButton);
-        signUpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, Sign_up.class);
+                Intent intent = new Intent(AddUser.this, ViewAlbum.class);
+                intent.putExtra("album", album);
                 startActivity(intent);
+
             }
         });
 
     }
+
 }

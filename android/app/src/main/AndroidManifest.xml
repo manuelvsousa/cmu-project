@@ -16,7 +16,6 @@
         android:usesCleartextTraffic="true"
         android:theme="@style/AppTheme">
         <activity android:name=".AddUserToAlbum"></activity>
-        <activity android:name=".ShowUserAlbums" />
         <activity android:name=".Album" />
         <activity android:name=".ViewAlbum" />
         <activity android:name=".FindUser" />
@@ -26,6 +25,10 @@
         <activity android:name=".Dropbox" />
         <activity android:name=".CreateAlbum" />
         <activity android:name=".ListAlbums" />
+        <activity android:name=".AddUser" />
+        <activity android:name=".ShowUsers"/>
+        <activity android:name=".ShowUserAlbums"/>
+        <activity android:name=".ShowAllUsers"/>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

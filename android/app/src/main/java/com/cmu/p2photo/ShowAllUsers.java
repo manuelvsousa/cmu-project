@@ -26,14 +26,14 @@ import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.entity.StringEntity;
 
 
-public class ShowUserAlbums extends AppCompatActivity {
-    private static final String URL_FEED = "user/album/list";
+public class ShowAllUsers extends AppCompatActivity {
+    private static final String URL_FEED = "user/list";
     ListView listView ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user_albums);
+        setContentView(R.layout.activity_all_users);
 
         // Get ListView object from xml
         listView = (ListView) findViewById(R.id.listView);
@@ -53,9 +53,8 @@ public class ShowUserAlbums extends AppCompatActivity {
             if (token == null) {
                 throw new RuntimeException("Session Token not found in Shared Preferences");
             }
-            final String user = getIntent().getStringExtra("user");
+            final String album = getIntent().getStringExtra("album");
             jsonParams.put("token", token);
-            jsonParams.put("user", user);
             StringEntity entity = new StringEntity(jsonParams.toString());
             AsyncHttpClient client = new AsyncHttpClient();
             client.post(getApplicationContext(), apiUrl + URL_FEED, entity, "application/json",
@@ -68,8 +67,8 @@ public class ShowUserAlbums extends AppCompatActivity {
                                 map = (Map<String, Object>) gson.fromJson(response.toString(), map.getClass());
                                 Log.d(URL_FEED, "Gson converted to map: " + map.toString());
 
-                                List<String> albums = (List<String>) map.get("albums");
-                                callback(albums);
+                                List<String> users = (List<String>) map.get("users");
+                                callback(users);
                                 if (!(boolean) map.get("success")) {
                                     Toast.makeText(getApplicationContext(), "Huge Problem Occured", Toast.LENGTH_SHORT).show();
                                 }
@@ -103,5 +102,27 @@ public class ShowUserAlbums extends AppCompatActivity {
 
         // Assign adapter to ListView
         listView.setAdapter(adapter);
+
+
+        // ListView Item Click Listener
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+
+                // ListView Clicked item index
+                int itemPosition     = position;
+
+                // ListView Clicked item value
+                String  itemValue    = (String) listView.getItemAtPosition(position);
+
+                Intent intent = new Intent(ShowAllUsers.this, ShowUserAlbums.class);
+                intent.putExtra("user", itemValue);
+                startActivity(intent);
+
+            }
+
+        });
     }
 }

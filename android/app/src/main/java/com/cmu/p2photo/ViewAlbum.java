@@ -30,6 +30,7 @@ import android.widget.Toast;
 import com.cmu.p2photo.drive.CreateFileTask;
 import com.cmu.p2photo.drive.DropboxClientFactory;
 import com.cmu.p2photo.drive.UploadFileTask;
+import com.cmu.p2photo.util.Config;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -51,11 +52,13 @@ import cz.msebera.android.httpclient.entity.StringEntity;
 
 
 public class ViewAlbum extends AppCompatActivity {
-
+    private static final String URL_FEED = "album/create";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_album);
+        final String apiUrl = Config.getConfigValue(this, "api_url");
+        final String sp = Config.getConfigValue(this, "shared_preferences");
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                 && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -81,6 +84,114 @@ public class ViewAlbum extends AppCompatActivity {
 
             }
         });
+
+
+        Button showUsers = findViewById(R.id.showUsers);
+        showUsers.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//
+                Intent intent = new Intent(ViewAlbum.this, ShowUsers.class);
+                intent.putExtra("album", album);
+                startActivity(intent);
+
+            }
+        });
+
+
+        Button addUser = findViewById(R.id.addUser);
+        addUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//
+                Intent intent = new Intent(ViewAlbum.this, AddUser.class);
+                intent.putExtra("album", album);
+                startActivity(intent);
+
+            }
+        });
+
+
+
+
+        //checks if album exists or not. If not, then creates empty catalog file
+
+
+
+
+
+
+        new CreateFileTask(getApplicationContext(), DropboxClientFactory.getClient(), new CreateFileTask.Callback() {
+            @Override
+            public void onUploadComplete(String result) {
+
+                EditText albumname = findViewById(R.id.userName);
+
+                try {
+                    JSONObject jsonParams = new JSONObject();
+                    SharedPreferences prefs = getSharedPreferences(sp, MODE_PRIVATE);
+                    String token = prefs.getString("token", null);
+                    if (token == null) {
+                        throw new RuntimeException("Session Token not found in Shared Preferences");
+                    }
+
+                    jsonParams.put("token", token);
+                    jsonParams.put("albumName", albumname.getText().toString());
+                    jsonParams.put("link", result);
+                    StringEntity entity = new StringEntity(jsonParams.toString());
+                    AsyncHttpClient client = new AsyncHttpClient();
+                    client.post(getApplicationContext(), apiUrl + URL_FEED, entity, "application/json",
+                            new JsonHttpResponseHandler() {
+                                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                                    Log.d(URL_FEED, "response raw: " + response.toString());
+                                    try {
+                                        Gson gson = new Gson();
+                                        Map<String, Object> map = new HashMap<>();
+                                        map = (Map<String, Object>) gson.fromJson(response.toString(), map.getClass());
+
+                                        Log.d(URL_FEED, "Gson converted to map: " + map.toString());
+                                        if ((boolean) map.get("success")) {
+                                            Toast.makeText(ViewAlbum.this, "Album Criado com Sucesso", Toast.LENGTH_SHORT)
+                                                    .show();
+                                        } else {
+                                            if(map.get("message").equals("album already exists")){
+                                                //ignore
+                                            } else {
+                                                Toast.makeText(getApplicationContext(), "Huge Problem Occured", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+
+                                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                                    Gson gson = new Gson();
+                                    Map<String, Object> map = new HashMap<>();
+                                    map = (Map<String, Object>) gson.fromJson(errorResponse.toString(), map.getClass());
+                                    Toast.makeText(getApplicationContext(), map.get("message").toString(), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.e(URL_FEED, "Failed to upload file.", e);
+            }
+        }).execute("/" + album);
+
+        // TODO ver se album ja existe ou nao, se nao, criar catalog
+
+
+
+
+
+
+
+
 
     }
 
@@ -117,8 +228,6 @@ public class ViewAlbum extends AppCompatActivity {
                     }
 
 
-
-
                     final String album = getIntent().getStringExtra("album");
                     // Set the image in ImageView
                     Log.d("FODASSE", selectedImageUri.toString());
@@ -126,15 +235,14 @@ public class ViewAlbum extends AppCompatActivity {
                     new UploadFileTask(getApplicationContext(), DropboxClientFactory.getClient(), new UploadFileTask.Callback() {
                         @Override
                         public void onUploadComplete(String result) {
-                            Log.d("FODASSE", result);
-
+                            Toast.makeText(getApplicationContext(), "Image uploaded with success", Toast.LENGTH_SHORT).show();
                         }
 
                         @Override
                         public void onError(Exception e) {
                             Log.e("FODASSE", "Failed to upload file.", e);
                         }
-                    }).execute(path,album);
+                    }).execute(path,album,getApplicationContext().getFilesDir().getPath());
 
 //
                 }

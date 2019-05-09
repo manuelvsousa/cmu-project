@@ -4,12 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CreateAlbum">
+    tools:context=".AddUser">
 
     <TextView
         android:id="@+id/textView8"
-        android:layout_width="251dp"
-        android:layout_height="74dp"
+        android:layout_width="155dp"
+        android:layout_height="64dp"
         android:layout_above="@+id/btnSign_main"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
@@ -21,7 +21,7 @@
         android:layout_marginRight="8dp"
         android:layout_marginBottom="172dp"
         android:password="false"
-        android:text="Create Album"
+        android:text="Add User"
         android:textColor="@color/colorPrimary"
         android:textIsSelectable="false"
         android:textSize="36sp"
@@ -39,7 +39,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="30dp"
-        android:text="Create"
+        android:text="Add"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/userName" />
@@ -51,7 +51,7 @@
         android:layout_marginStart="43dp"
         android:layout_marginLeft="43dp"
         android:layout_marginBottom="437dp"
-        android:text="Album Name"
+        android:text="Username"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -63,7 +63,7 @@
         android:layout_marginBottom="302dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="album"
+        android:text="aa"
         app:layout_constraintBottom_toTopOf="@+id/addUser"
         app:layout_constraintStart_toStartOf="@+id/textView13"
         app:layout_constraintTop_toTopOf="parent" />

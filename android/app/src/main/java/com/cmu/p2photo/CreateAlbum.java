@@ -34,12 +34,12 @@ public class CreateAlbum extends AppCompatActivity {
         setContentView(R.layout.activity_create_album);
         final String apiUrl = Config.getConfigValue(this, "api_url");
         final String sp = Config.getConfigValue(this, "shared_preferences");
-        Button btnFind = findViewById(R.id.createAlbum);
+        Button btnFind = findViewById(R.id.addUser);
         btnFind.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                EditText albumname = findViewById(R.id.albumName);
+                EditText albumname = findViewById(R.id.userName);
 
 
 
@@ -99,7 +99,7 @@ public class CreateAlbum extends AppCompatActivity {
                     @Override
                     public void onUploadComplete(String result) {
 
-                        EditText albumname = findViewById(R.id.albumName);
+                        EditText albumname = findViewById(R.id.userName);
 
                         try {
                             JSONObject jsonParams = new JSONObject();
@@ -109,11 +109,9 @@ public class CreateAlbum extends AppCompatActivity {
                                 throw new RuntimeException("Session Token not found in Shared Preferences");
                             }
 
-                            Log.d("FODASSE",token.toString());
                             jsonParams.put("token", token);
                             jsonParams.put("albumName", albumname.getText().toString());
                             jsonParams.put("link", result);
-                            Log.d("FODASSE",result);
                             StringEntity entity = new StringEntity(jsonParams.toString());
                             AsyncHttpClient client = new AsyncHttpClient();
                             client.post(getApplicationContext(), apiUrl + URL_FEED, entity, "application/json",
@@ -163,59 +161,6 @@ public class CreateAlbum extends AppCompatActivity {
 
             }
         });
-
-
-
-
-//        btnFind.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                final EditText username = findViewById(R.id.albumName);
-//
-//                /* GET USERS */
-//                try {
-//                    JSONObject jsonParams = new JSONObject();
-//                    SharedPreferences prefs = getSharedPreferences(sp, MODE_PRIVATE);
-//                    String token = prefs.getString("token", null);
-//                    if (token == null) {
-//                        throw new RuntimeException("Session Token not found in Shared Preferences");
-//                    }
-//                    jsonParams.put("token", token);
-//                    StringEntity entity = new StringEntity(jsonParams.toString());
-//                    new AsyncHttpClient().post(getApplicationContext(), apiUrl + URL_FEED, entity, "application/json",
-//                            new JsonHttpResponseHandler() {
-//                                ArrayList<String> a = null;
-//                                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-//                                    Log.d(URL_FEED, "response raw: " + response.toString());
-//                                    try {
-//                                        Gson gson = new Gson();
-//                                        Map<String, Object> map = new HashMap<>();
-//                                        map = (Map<String, Object>) gson.fromJson(response.toString(), map.getClass());
-//                                        ArrayList<String> users = (ArrayList<String>) map.get("users");
-//                                        if (!(boolean) map.get("success")) {
-//                                            Toast.makeText(getApplicationContext(), "Failed to return users", Toast.LENGTH_SHORT).show();
-//                                        }
-//                                    } catch (Exception e) {
-//                                        e.printStackTrace();
-//                                    }
-//                                }
-//
-//                                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-//                                    Gson gson = new Gson();
-//                                    Map<String, Object> map = new HashMap<>();
-//                                    map = (Map<String, Object>) gson.fromJson(errorResponse.toString(), map.getClass());
-//                                    Toast.makeText(getApplicationContext(), map.get("message").toString(), Toast.LENGTH_SHORT).show();
-//                                }
-//
-//                            });
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//
-//
-//
-//            }
-//        });
 
     }
 
