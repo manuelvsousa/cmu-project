@@ -98,7 +98,6 @@ public class ViewAlbum extends AppCompatActivity {
         setContentView(R.layout.activity_view_album);
         final String apiUrl = Config.getConfigValue(this, "api_url");
         final String sp = Config.getConfigValue(this, "shared_preferences");
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                 && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
@@ -213,17 +212,19 @@ public class ViewAlbum extends AppCompatActivity {
                 Log.e(URL_FEED, "Failed to upload file.", e);
             }
         }).execute("/" + album);
-
+        fetchCatalogs();
     }
 
 
 
     public void writePhotos(){
-
         final String album = getIntent().getStringExtra("album");
 
+        if(urls.length() > 0 && urls.charAt(0) == ','){
+            urls = urls.substring(1);
+        }
+
         final List<String> photos = new ArrayList<String>(Arrays.asList(urls.split(",")));
-        Toast.makeText(getApplicationContext(), photos.toString(), Toast.LENGTH_SHORT).show();
         final String photoPath = getApplicationContext().getFilesDir().getPath() + "/" + album + "/";
 
 
@@ -264,7 +265,6 @@ public class ViewAlbum extends AppCompatActivity {
             }
         }
         Log.d("FODASSE","ELLELELLE");
-        final CountDownLatch latch = new CountDownLatch(photos.size());
         for(int i =0; i < photos.size() ; i++){
             String parsedPhotoName = photos.get(i).split("/")[photos.get(i).split("/").length -1];
             Log.d("FODASSE",parsedPhotoName);
@@ -277,6 +277,7 @@ public class ViewAlbum extends AppCompatActivity {
                     protected Void doInBackground(String... params) {
                         try{
                             URL url = new URL(params[0]);
+                            Log.d("FODASSE",params[0]);
                             InputStream in = new BufferedInputStream(url.openStream());
                             ByteArrayOutputStream out = new ByteArrayOutputStream();
                             byte[] buf = new byte[1024];
@@ -289,7 +290,6 @@ public class ViewAlbum extends AppCompatActivity {
                             in.close();
                             byte[] response = out.toByteArray();
                             savePhotoToDisk(response,params[1]);
-                            latch.countDown();
                         } catch (Exception e){
                             e.printStackTrace();
                         }
@@ -297,8 +297,6 @@ public class ViewAlbum extends AppCompatActivity {
 
                     }
                 }).execute(photos.get(i),photoName);
-            } else {
-                latch.countDown();
             }
         }
     }
@@ -412,7 +410,7 @@ public class ViewAlbum extends AppCompatActivity {
                     new UploadFileTask(getApplicationContext(), DropboxClientFactory.getClient(), new UploadFileTask.Callback() {
                         @Override
                         public void onUploadComplete(String result) {
-                            writePhotos();
+                            fetchCatalogs();
                             Toast.makeText(getApplicationContext(), "Image uploaded with success", Toast.LENGTH_SHORT).show();
                         }
 
@@ -433,6 +431,10 @@ public class ViewAlbum extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        fetchCatalogs();
+    }
+
+    private void fetchCatalogs(){
         final String album = getIntent().getStringExtra("album");
         final String apiUrl = Config.getConfigValue(this, "api_url");
         final String sp = Config.getConfigValue(this, "shared_preferences");
@@ -479,8 +481,6 @@ public class ViewAlbum extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
 
     private void catalogProcessor(final List<String> catalogs){
@@ -493,6 +493,7 @@ public class ViewAlbum extends AppCompatActivity {
                 public void onSuccess(int statusCode, Header[] headers, byte[] response) {
                     urls += new String(response);
                     Log.d("FODASSE","YEEEEEEP 2");
+                    writePhotos();
                     latch.countDown();
                 }
 
@@ -502,23 +503,5 @@ public class ViewAlbum extends AppCompatActivity {
                 }
             });
         }
-        (new AsyncTask<Void,Void,Void>() {
-
-            @Override
-            protected Void doInBackground(Void... voids) {
-                try{
-                    latch.await();
-                    Log.d("FODASSE",urls);
-                    urls = urls.substring(1);
-                    Log.d("FODASSE",urls);
-
-                    Log.d("FODASSE","consegui  ");
-
-                } catch (Exception e){
-                    e.printStackTrace();
-                }
-                return null;
-            }
-        }).execute();
     }
 }
