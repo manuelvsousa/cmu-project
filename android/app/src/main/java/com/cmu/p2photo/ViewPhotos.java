@@ -72,108 +72,25 @@ public class ViewPhotos extends AppCompatActivity {
         setContentView(R.layout.activity_view_photos);
         final String apiUrl = Config.getConfigValue(this, "api_url");
         final String sp = Config.getConfigValue(this, "shared_preferences");
-        final String photosS = getIntent().getStringExtra("photos");
         final String album = getIntent().getStringExtra("album");
 
-        final List<String> photos = new ArrayList<String>(Arrays.asList(photosS.split(",")));
-
-
         Log.d("FODASSE",getApplicationContext().getFilesDir().getPath());
-
-        final String photoPath = getApplicationContext().getFilesDir().getPath() + "/" + album + "/";
-
-
-        File dir = new File(photoPath);
-        dir.delete();
-
         final GridView gridView  =  findViewById(R.id.gridview);
+        final String photoPath = getApplicationContext().getFilesDir().getPath() + "/" + album + "/";
         ImageAdapter gridAdapter =(new ImageAdapter(this, photoPath));
         gridView.setAdapter(gridAdapter);
-
-
-        //TESTING PURPOSES
-        //TESTING PURPOSES
-        //TESTING PURPOSES
-        //TESTING PURPOSES
-        //TESTING PURPOSES
-//        String[]entries = dir.list();
-//        for(String s: entries){
-//            File currentFile = new File(dir.getPath(),s);
-//            currentFile.delete();
-//        }
-//        dir.delete();
-        //TESTING PURPOSES
-        //TESTING PURPOSES
-        //TESTING PURPOSES
-        //TESTING PURPOSES
-        //TESTING PURPOSES
-
-
-        if(!dir.exists()) {
-            dir.mkdir();
-            File file = new File(photoPath + "images.json");
-            try{
-                file.delete();
-                if (file.createNewFile()) {
-                    //good, created
-                }
-                List<String> foo = new ArrayList<String>();
-                String json = new Gson().toJson(foo);
-                saveToJsonCatalog(json);
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-        Log.d("FODASSE","ELLELELLE");
-        final CountDownLatch latch = new CountDownLatch(photos.size());
-        for(int i =0; i < photos.size() ; i++){
-            String parsedPhotoName = photos.get(i).split("/")[photos.get(i).split("/").length -1];
-            Log.d("FODASSE",parsedPhotoName);
-            Log.d("FODASSE",parsedPhotoName.split("\\.").toString());
-            String photoName = parsedPhotoName.split("\\.")[0];
-            Log.d("FODASSE",photoName);
-            if(savePhoto(photoName)){
-                (new AsyncTask<String,Void,Void>() {
-                    @Override
-                    protected Void doInBackground(String... params) {
-                    try{
-                        URL url = new URL(params[0]);
-                        InputStream in = new BufferedInputStream(url.openStream());
-                        ByteArrayOutputStream out = new ByteArrayOutputStream();
-                        byte[] buf = new byte[1024];
-                        int n = 0;
-                        while (-1!=(n=in.read(buf)))
-                        {
-                            out.write(buf, 0, n);
-                        }
-                        out.close();
-                        in.close();
-                        byte[] response = out.toByteArray();
-                        savePhotoToDisk(response,params[1]);
-                        latch.countDown();
-                    } catch (Exception e){
-                        e.printStackTrace();
-                    }
-                        return null;
-
-                    }
-                }).execute(photos.get(i),photoName);
-            } else {
-                latch.countDown();
-            }
-        }
         (new AsyncTask<Void,Void,Void>() {
 
             @Override
             protected Void doInBackground(Void... voids) {
                 try{
-                    latch.await();
                     gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+                            Toast.makeText(ViewPhotos.this, "" + position, Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(ViewPhotos.this, ViewPhoto.class);
                             File folder = new File(photoPath);
                             File[] listOfFiles = folder.listFiles();
-                             List<String> list = new ArrayList<>();
+                            List<String> list = new ArrayList<>();
                             for (int i = 0; i < listOfFiles.length; i++) {
                                 if (listOfFiles[i].isFile()) {
                                     if(listOfFiles[i].getName().contains(".jpg")){
@@ -195,73 +112,6 @@ public class ViewPhotos extends AppCompatActivity {
                 return null;
             }
         }).execute();
-    }
-
-    private void savePhotoToDisk(byte[] photoBytes, String photoName){
-        final String album = getIntent().getStringExtra("album");
-        final String photoPath = getApplicationContext().getFilesDir().getPath() + "/" + album + "/";
-        File photo=new File(photoPath + photoName + ".jpg");
-        try {
-            if (!photo.exists()) {
-                photo.createNewFile();
-            }
-            FileOutputStream fos=new FileOutputStream(photo.getPath());
-
-            fos.write(photoBytes);
-            fos.close();
-            Log.d("FODASSE",photoName + " was written to folder");
-        }
-        catch (java.io.IOException e) {
-            Log.e("P2PHOTO", "Exception in photoCallback", e);
-        }
-    }
-
-    private boolean savePhoto(String fileName){
-        List<String> savedPhotos = null;
-        try {
-            final String album = getIntent().getStringExtra("album");
-            final String photoPath = getApplicationContext().getFilesDir().getPath() + "/" + album + "/";
-            FileInputStream fis = new FileInputStream(new File(photoPath + "images.json"));
-            InputStreamReader isr = new InputStreamReader(fis);
-            BufferedReader bufferedReader = new BufferedReader(isr);
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                sb.append(line);
-            }
-            Gson gson = new Gson(); // Or use new GsonBuilder().create();
-            Log.d("FODASSE",sb.toString());
-            if(sb.toString().equals("")){
-                savedPhotos = new ArrayList<String>();
-            } else {
-                savedPhotos = gson.fromJson(sb.toString(), List.class);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        if(!savedPhotos.contains(fileName)){
-            savedPhotos.add(fileName);
-            Log.d("FODASSE",new Gson().toJson(savedPhotos));
-            saveToJsonCatalog(new Gson().toJson(savedPhotos));
-            return true;
-        } else {
-            Log.d("FODASSE","skipped");
-            return false;
-        }
-    }
-
-    private void saveToJsonCatalog(String json){
-        try {
-            final String album = getIntent().getStringExtra("album");
-            final String photoPath = getApplicationContext().getFilesDir().getPath() + "/" + album + "/";
-            FileOutputStream fos = new FileOutputStream(new File(photoPath + "images.json"));
-            if (json != null) {
-                fos.write(json.getBytes());
-            }
-            fos.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        //writePhotos();
     }
 }

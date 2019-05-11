@@ -19,8 +19,10 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +30,7 @@ import com.cmu.p2photo.drive.CreateFileTask;
 import com.cmu.p2photo.drive.DropboxClientFactory;
 import com.cmu.p2photo.drive.UploadFileTask;
 import com.cmu.p2photo.util.Config;
+import com.cmu.p2photo.util.ImageAdapter;
 import com.dropbox.core.android.Auth;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
@@ -36,7 +39,15 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -191,6 +202,7 @@ public class ViewAlbum extends AppCompatActivity {
                                     Toast.makeText(getApplicationContext(), map.get("message").toString(), Toast.LENGTH_SHORT).show();
                                 }
                             });
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -203,6 +215,170 @@ public class ViewAlbum extends AppCompatActivity {
         }).execute("/" + album);
 
     }
+
+
+
+    public void writePhotos(){
+
+        final String album = getIntent().getStringExtra("album");
+
+        final List<String> photos = new ArrayList<String>(Arrays.asList(urls.split(",")));
+        Toast.makeText(getApplicationContext(), photos.toString(), Toast.LENGTH_SHORT).show();
+        final String photoPath = getApplicationContext().getFilesDir().getPath() + "/" + album + "/";
+
+
+        File dir = new File(photoPath);
+
+
+        //TESTING PURPOSES
+        //TESTING PURPOSES
+        //TESTING PURPOSES
+        //TESTING PURPOSES
+        //TESTING PURPOSES
+//        String[]entries = dir.list();
+//        for(String s: entries){
+//            File currentFile = new File(dir.getPath(),s);
+//            currentFile.delete();
+//        }
+//        dir.delete();
+        //TESTING PURPOSES
+        //TESTING PURPOSES
+        //TESTING PURPOSES
+        //TESTING PURPOSES
+        //TESTING PURPOSES
+
+
+        if(!dir.exists()) {
+            dir.mkdir();
+            File file = new File(photoPath + "images.json");
+            try{
+                file.delete();
+                if (file.createNewFile()) {
+                    //good, created
+                }
+                List<String> foo = new ArrayList<String>();
+                String json = new Gson().toJson(foo);
+                saveToJsonCatalog(json);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        Log.d("FODASSE","ELLELELLE");
+        final CountDownLatch latch = new CountDownLatch(photos.size());
+        for(int i =0; i < photos.size() ; i++){
+            String parsedPhotoName = photos.get(i).split("/")[photos.get(i).split("/").length -1];
+            Log.d("FODASSE",parsedPhotoName);
+            Log.d("FODASSE",parsedPhotoName.split("\\.").toString());
+            String photoName = parsedPhotoName.split("\\.")[0];
+            Log.d("FODASSE",photoName);
+            if(savePhoto(photoName)){
+                (new AsyncTask<String,Void,Void>() {
+                    @Override
+                    protected Void doInBackground(String... params) {
+                        try{
+                            URL url = new URL(params[0]);
+                            InputStream in = new BufferedInputStream(url.openStream());
+                            ByteArrayOutputStream out = new ByteArrayOutputStream();
+                            byte[] buf = new byte[1024];
+                            int n = 0;
+                            while (-1!=(n=in.read(buf)))
+                            {
+                                out.write(buf, 0, n);
+                            }
+                            out.close();
+                            in.close();
+                            byte[] response = out.toByteArray();
+                            savePhotoToDisk(response,params[1]);
+                            latch.countDown();
+                        } catch (Exception e){
+                            e.printStackTrace();
+                        }
+                        return null;
+
+                    }
+                }).execute(photos.get(i),photoName);
+            } else {
+                latch.countDown();
+            }
+        }
+    }
+
+    private void saveToJsonCatalog(String json){
+        try {
+            final String album = getIntent().getStringExtra("album");
+            final String photoPath = getApplicationContext().getFilesDir().getPath() + "/" + album + "/";
+            FileOutputStream fos = new FileOutputStream(new File(photoPath + "images.json"));
+            if (json != null) {
+                fos.write(json.getBytes());
+            }
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void savePhotoToDisk(byte[] photoBytes, String photoName){
+        final String album = getIntent().getStringExtra("album");
+        final String photoPath = getApplicationContext().getFilesDir().getPath() + "/" + album + "/";
+        File photo=new File(photoPath + photoName + ".jpg");
+        try {
+            if (!photo.exists()) {
+                photo.createNewFile();
+            }
+            FileOutputStream fos=new FileOutputStream(photo.getPath());
+
+            fos.write(photoBytes);
+            fos.close();
+            Log.d("FODASSE",photoName + " was written to folder");
+        }
+        catch (java.io.IOException e) {
+            Log.e("P2PHOTO", "Exception in photoCallback", e);
+        }
+    }
+
+
+    private boolean savePhoto(String fileName){
+        List<String> savedPhotos = null;
+        try {
+            final String album = getIntent().getStringExtra("album");
+            final String photoPath = getApplicationContext().getFilesDir().getPath() + "/" + album + "/";
+            FileInputStream fis = new FileInputStream(new File(photoPath + "images.json"));
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader bufferedReader = new BufferedReader(isr);
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                sb.append(line);
+            }
+            Gson gson = new Gson(); // Or use new GsonBuilder().create();
+            Log.d("FODASSE",sb.toString());
+            if(sb.toString().equals("")){
+                savedPhotos = new ArrayList<String>();
+            } else {
+                savedPhotos = gson.fromJson(sb.toString(), List.class);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if(!savedPhotos.contains(fileName)){
+            savedPhotos.add(fileName);
+            Log.d("FODASSE",new Gson().toJson(savedPhotos));
+            saveToJsonCatalog(new Gson().toJson(savedPhotos));
+            return true;
+        } else {
+            Log.d("FODASSE","skipped");
+            return false;
+        }
+
+
+
+
+
+
+    }
+
+
 
     @Override
     public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
@@ -236,6 +412,7 @@ public class ViewAlbum extends AppCompatActivity {
                     new UploadFileTask(getApplicationContext(), DropboxClientFactory.getClient(), new UploadFileTask.Callback() {
                         @Override
                         public void onUploadComplete(String result) {
+                            writePhotos();
                             Toast.makeText(getApplicationContext(), "Image uploaded with success", Toast.LENGTH_SHORT).show();
                         }
 
@@ -259,7 +436,6 @@ public class ViewAlbum extends AppCompatActivity {
         final String album = getIntent().getStringExtra("album");
         final String apiUrl = Config.getConfigValue(this, "api_url");
         final String sp = Config.getConfigValue(this, "shared_preferences");
-        Toast.makeText(getApplicationContext(),"RESUMED CARALGO", Toast.LENGTH_SHORT).show();
         try {
             JSONObject jsonParams = new JSONObject();
             SharedPreferences prefs = getSharedPreferences(sp, MODE_PRIVATE);

@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -64,7 +63,9 @@ public class ImageAdapter extends BaseAdapter {
 
     public View getView(int position, View convertView, ViewGroup parent) {
         ImageView img;
+
         if (convertView == null) {
+
             img = new ImageView(context);
             img.setLayoutParams(new GridView.LayoutParams(350, 350));
             img.setScaleType(ImageView.ScaleType.CENTER_CROP);
