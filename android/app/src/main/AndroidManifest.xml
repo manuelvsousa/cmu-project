@@ -28,6 +28,8 @@
         <activity android:name=".ShowUsers"/>
         <activity android:name=".ShowUserAlbums"/>
         <activity android:name=".ShowAllUsers"/>
+        <activity android:name=".ViewPhotos"/>
+        <activity android:name=".ViewPhoto"/>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

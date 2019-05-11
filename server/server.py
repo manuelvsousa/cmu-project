@@ -156,6 +156,33 @@ def getAlbumsUsers():
     return jsonify(users=[album.username for album in albums], success=True)
 
 
+@app.route('/album/catalog/list', methods=['POST'])
+def getAlbumCatalogs():
+    token = str(request.json.get('token', ""))
+    albumName = str(request.json.get('albumName', ""))
+    if(token == "" or albumName == ""):
+        resp = jsonify(success=False, message="token or albumName is empty")
+        return make_response(resp, 400)
+    if db.Session.query.filter_by(token=token).count() != 1:
+        resp = jsonify(success=False, message="token does not exist")
+        return make_response(resp, 404)
+
+    s = db.Session.query.filter_by(token=token).first()
+    u = db.User.query.filter_by(username=s.username).first()
+
+    if db.Album.query.filter_by(username=s.username, album=albumName).count() != 1:
+        resp = jsonify(success=False, message=s.username +
+                       " does not have permition to check catalogs in album: " + albumName)
+        return make_response(resp, 403)
+
+    albums = db.Album.query.filter_by(album=albumName)
+    r = []
+    print [album.url for album in albums]
+    for album in albums:
+        if(album.url != ""):
+            r += [album.url]
+    return jsonify(catalogs=r, success=True)
+
 @app.route('/user/album/list', methods=['POST'])
 def getUserAlbums():
     token = str(request.json.get('token', ""))
@@ -215,6 +242,33 @@ def addUserAlbum():
     db.db_session.commit()
     return jsonify(success=True)
 
+@app.route('/album/user/add/dropbox', methods=['POST'])
+def addDropboxToAlbum():
+    token = str(request.json.get('token', ""))
+    link = str(request.json.get('link', ""))
+    albumName = str(request.json.get('albumName', ""))
+    print token, link, albumName
+    if(token == "" or link == "" or albumName == ""):
+        resp = jsonify(success=False, message="token or link or albumName is empty")
+        return make_response(resp, 400)
+
+    if db.Session.query.filter_by(token=token).count() != 1:
+        resp = jsonify(success=False, message="token does not exist")
+        return make_response(resp, 404)
+
+    s = db.Session.query.filter_by(token=token).first()
+    u = db.User.query.filter_by(username=s.username).first()
+
+    if db.Album.query.filter_by(username=s.username, album=albumName).count() != 1:
+        resp = jsonify(success=False, message=s.username +
+                       " does not have permition to add dropbox catalog link")
+        return make_response(resp, 403)
+
+    a = db.Album.query.filter_by(album=albumName,username=u.username).first()
+    a.url = link
+    db.db_session.add(a)
+    db.db_session.commit()
+    return jsonify(success=True)
 
 @app.route('/user/login', methods=['POST'])
 def loginUser():

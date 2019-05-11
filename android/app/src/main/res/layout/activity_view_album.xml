@@ -8,8 +8,8 @@
 
     <TextView
         android:id="@+id/albumTextView"
-        android:layout_width="0dp"
-        android:layout_height="63dp"
+        android:layout_width="380dp"
+        android:layout_height="65dp"
         android:layout_above="@+id/btnSign_main"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
@@ -19,75 +19,64 @@
         android:layout_marginTop="28dp"
         android:layout_marginEnd="17dp"
         android:layout_marginRight="17dp"
+        android:layout_marginBottom="175dp"
         android:password="false"
         android:text="P2photo"
         android:textColor="@color/colorPrimary"
         android:textIsSelectable="false"
         android:textSize="36sp"
         app:fontFamily="casual"
+        app:layout_constraintBottom_toTopOf="@+id/addUser"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/showUsers"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="7dp"
+        android:layout_width="120dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="20dp"
         android:text="Album Users"
+        app:layout_constraintBottom_toTopOf="@+id/addPhoto"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/albumTextView" />
+        app:layout_constraintTop_toBottomOf="@+id/addUser" />
 
     <Button
         android:id="@+id/addPhoto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="27dp"
-        android:layout_marginLeft="27dp"
-        android:layout_marginTop="7dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginBottom="18dp"
         android:text="Add Photo"
-        app:layout_constraintStart_toEndOf="@+id/showUsers"
-        app:layout_constraintTop_toBottomOf="@+id/albumTextView" />
+        app:layout_constraintBottom_toTopOf="@+id/viewPhotos"
+        app:layout_constraintStart_toStartOf="@+id/viewPhotos"
+        app:layout_constraintTop_toBottomOf="@+id/showUsers" />
 
     <Button
         android:id="@+id/addUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="7dp"
-        android:layout_marginEnd="42dp"
-        android:layout_marginRight="42dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="28dp"
         android:text="Add User"
-        app:layout_constraintEnd_toStartOf="@+id/showUsers"
+        app:layout_constraintBottom_toTopOf="@+id/showUsers"
+        app:layout_constraintStart_toStartOf="@+id/showUsers"
         app:layout_constraintTop_toBottomOf="@+id/albumTextView" />
 
-    <com.cmu.p2photo.views.SquareView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/squareView"
-        android:layout_width="389dp"
-        android:layout_height="386dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginLeft="12dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="12dp"
-        android:layout_marginRight="12dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addPhoto">
 
-        <LinearLayout
-            android:id="@+id/item"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/text"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="Hello world" />
-        </LinearLayout>
-    </com.cmu.p2photo.views.SquareView>
+    <Button
+        android:id="@+id/viewPhotos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginBottom="209dp"
+        android:text="View Photos"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/showUsers"
+        app:layout_constraintTop_toBottomOf="@+id/addPhoto" />
 
 </android.support.constraint.ConstraintLayout>

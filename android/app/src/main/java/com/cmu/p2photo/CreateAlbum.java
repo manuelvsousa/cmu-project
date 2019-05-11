@@ -43,9 +43,6 @@ public class CreateAlbum extends AppCompatActivity {
                 EditText albumname = findViewById(R.id.userName);
 
 
-
-
-
                 /* check album status */
                 try {
                     JSONObject jsonParams = new JSONObject();

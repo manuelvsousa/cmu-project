@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.DocumentsContract;
@@ -27,23 +28,32 @@ import com.cmu.p2photo.drive.CreateFileTask;
 import com.cmu.p2photo.drive.DropboxClientFactory;
 import com.cmu.p2photo.drive.UploadFileTask;
 import com.cmu.p2photo.util.Config;
+import com.dropbox.core.android.Auth;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Future;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.entity.StringEntity;
+import okhttp3.Response;
 
 
 public class ViewAlbum extends AppCompatActivity {
-    private static final String URL_FEED = "album/create";
-
+    private static final String URL_FEED = "album/user/add/dropbox";
+    private static final String URL_FEED2 = "/album/catalog/list";
+    private String urls = new String();
     @SuppressLint("NewApi")
     public static String getRealPathFromURI(Context context, Uri uri) {
 
@@ -128,12 +138,20 @@ public class ViewAlbum extends AppCompatActivity {
             }
         });
 
+        Button viewPhotos = findViewById(R.id.viewPhotos);
+        viewPhotos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ViewAlbum.this, ViewPhotos.class);
+                intent.putExtra("photos", urls);
+                intent.putExtra("album", album);
+                startActivity(intent);
+            }
+        });
 
         new CreateFileTask(getApplicationContext(), DropboxClientFactory.getClient(), new CreateFileTask.Callback() {
             @Override
             public void onUploadComplete(String result) {
-
-                EditText albumname = findViewById(R.id.userName);
 
                 try {
                     JSONObject jsonParams = new JSONObject();
@@ -144,7 +162,7 @@ public class ViewAlbum extends AppCompatActivity {
                     }
 
                     jsonParams.put("token", token);
-                    jsonParams.put("albumName", albumname.getText().toString());
+                    jsonParams.put("albumName", album);
                     jsonParams.put("link", result);
                     StringEntity entity = new StringEntity(jsonParams.toString());
                     AsyncHttpClient client = new AsyncHttpClient();
@@ -158,15 +176,8 @@ public class ViewAlbum extends AppCompatActivity {
                                         map = (Map<String, Object>) gson.fromJson(response.toString(), map.getClass());
 
                                         Log.d(URL_FEED, "Gson converted to map: " + map.toString());
-                                        if ((boolean) map.get("success")) {
-                                            Toast.makeText(ViewAlbum.this, "Album Criado com Sucesso", Toast.LENGTH_SHORT)
-                                                    .show();
-                                        } else {
-                                            if (map.get("message").equals("album already exists")) {
-                                                //ignore
-                                            } else {
+                                        if (!(boolean) map.get("success")) {
                                                 Toast.makeText(getApplicationContext(), "Huge Problem Occured", Toast.LENGTH_SHORT).show();
-                                            }
                                         }
                                     } catch (Exception e) {
                                         e.printStackTrace();
@@ -205,8 +216,6 @@ public class ViewAlbum extends AppCompatActivity {
         }
     }
 
-    //                    ImageView asd = findViewById(R.id.imageView);
-//                    asd.setImageURI(selectedImageUri);
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -244,4 +253,96 @@ public class ViewAlbum extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        final String album = getIntent().getStringExtra("album");
+        final String apiUrl = Config.getConfigValue(this, "api_url");
+        final String sp = Config.getConfigValue(this, "shared_preferences");
+        Toast.makeText(getApplicationContext(),"RESUMED CARALGO", Toast.LENGTH_SHORT).show();
+        try {
+            JSONObject jsonParams = new JSONObject();
+            SharedPreferences prefs = getSharedPreferences(sp, MODE_PRIVATE);
+            String token = prefs.getString("token", null);
+            if (token == null) {
+                throw new RuntimeException("Session Token not found in Shared Preferences");
+            }
+
+            jsonParams.put("token", token);
+            jsonParams.put("albumName", album);
+            StringEntity entity = new StringEntity(jsonParams.toString());
+            AsyncHttpClient client = new AsyncHttpClient();
+            client.post(getApplicationContext(), apiUrl + URL_FEED2, entity, "application/json",
+                    new JsonHttpResponseHandler() {
+                        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                            Log.d(URL_FEED2, "response raw: " + response.toString());
+                            try {
+                                Gson gson = new Gson();
+                                Map<String, Object> map = new HashMap<>();
+                                map = (Map<String, Object>) gson.fromJson(response.toString(), map.getClass());
+                                Log.d(URL_FEED2, "Gson converted to map: " + map.toString());
+
+                                List<String> catalogs = (List<String>) map.get("catalogs");
+                                Log.d("FODASSE","YEEEEEEP 1");
+                                catalogProcessor(catalogs);
+                                if (!(boolean) map.get("success")) {
+                                    Toast.makeText(getApplicationContext(), "Huge Problem Occured", Toast.LENGTH_SHORT).show();
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                            Gson gson = new Gson();
+                            Map<String, Object> map = new HashMap<>();
+                            map = (Map<String, Object>) gson.fromJson(errorResponse.toString(), map.getClass());
+                            Toast.makeText(getApplicationContext(), map.get("message").toString(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    private void catalogProcessor(final List<String> catalogs){
+        urls = "";
+        final CountDownLatch latch = new CountDownLatch(catalogs.size());
+        for(int i =0; i < catalogs.size() ; i++){
+            AsyncHttpClient client = new AsyncHttpClient();
+            client.get(catalogs.get(i), new AsyncHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, byte[] response) {
+                    urls += new String(response);
+                    Log.d("FODASSE","YEEEEEEP 2");
+                    latch.countDown();
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, byte[] errorResponse, Throwable e) {
+                    // called when response HTTP status is "4XX" (eg. 401, 403, 404)
+                }
+            });
+        }
+        (new AsyncTask<Void,Void,Void>() {
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+                try{
+                    latch.await();
+                    Log.d("FODASSE",urls);
+                    urls = urls.substring(1);
+                    Log.d("FODASSE",urls);
+
+                    Log.d("FODASSE","consegui  ");
+
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        }).execute();
+    }
 }
