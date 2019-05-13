@@ -19,10 +19,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,8 +27,6 @@ import com.cmu.p2photo.drive.CreateFileTask;
 import com.cmu.p2photo.drive.DropboxClientFactory;
 import com.cmu.p2photo.drive.UploadFileTask;
 import com.cmu.p2photo.util.Config;
-import com.cmu.p2photo.util.ImageAdapter;
-import com.dropbox.core.android.Auth;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -54,17 +49,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Future;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.entity.StringEntity;
-import okhttp3.Response;
 
 
 public class ViewAlbum extends AppCompatActivity {
     private static final String URL_FEED = "album/user/add/dropbox";
     private static final String URL_FEED2 = "/album/catalog/list";
     private String urls = new String();
+
     @SuppressLint("NewApi")
     public static String getRealPathFromURI(Context context, Uri uri) {
 
@@ -187,7 +181,7 @@ public class ViewAlbum extends AppCompatActivity {
 
                                         Log.d(URL_FEED, "Gson converted to map: " + map.toString());
                                         if (!(boolean) map.get("success")) {
-                                                Toast.makeText(getApplicationContext(), "Huge Problem Occured", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(getApplicationContext(), "Huge Problem Occured", Toast.LENGTH_SHORT).show();
                                         }
                                     } catch (Exception e) {
                                         e.printStackTrace();
@@ -216,11 +210,10 @@ public class ViewAlbum extends AppCompatActivity {
     }
 
 
-
-    public void writePhotos(){
+    public void writePhotos() {
         final String album = getIntent().getStringExtra("album");
 
-        if(urls.length() > 0 && urls.charAt(0) == ','){
+        if (urls.length() > 0 && urls.charAt(0) == ',') {
             urls = urls.substring(1);
         }
 
@@ -249,10 +242,10 @@ public class ViewAlbum extends AppCompatActivity {
         //TESTING PURPOSES
 
 
-        if(!dir.exists()) {
+        if (!dir.exists()) {
             dir.mkdir();
             File file = new File(photoPath + "images.json");
-            try{
+            try {
                 file.delete();
                 if (file.createNewFile()) {
                     //good, created
@@ -260,48 +253,47 @@ public class ViewAlbum extends AppCompatActivity {
                 List<String> foo = new ArrayList<String>();
                 String json = new Gson().toJson(foo);
                 saveToJsonCatalog(json);
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        Log.d("FODASSE","ELLELELLE");
-        for(int i =0; i < photos.size() ; i++){
-            String parsedPhotoName = photos.get(i).split("/")[photos.get(i).split("/").length -1];
-            Log.d("FODASSE",parsedPhotoName);
-            Log.d("FODASSE",parsedPhotoName.split("\\.").toString());
+        Log.d("FODASSE", "ELLELELLE");
+        for (int i = 0; i < photos.size(); i++) {
+            String parsedPhotoName = photos.get(i).split("/")[photos.get(i).split("/").length - 1];
+            Log.d("FODASSE", parsedPhotoName);
+            Log.d("FODASSE", parsedPhotoName.split("\\.").toString());
             String photoName = parsedPhotoName.split("\\.")[0];
-            Log.d("FODASSE",photoName);
-            if(savePhoto(photoName)){
-                (new AsyncTask<String,Void,Void>() {
+            Log.d("FODASSE", photoName);
+            if (savePhoto(photoName)) {
+                (new AsyncTask<String, Void, Void>() {
                     @Override
                     protected Void doInBackground(String... params) {
-                        try{
+                        try {
                             URL url = new URL(params[0]);
-                            Log.d("FODASSE",params[0]);
+                            Log.d("FODASSE", params[0]);
                             InputStream in = new BufferedInputStream(url.openStream());
                             ByteArrayOutputStream out = new ByteArrayOutputStream();
                             byte[] buf = new byte[1024];
                             int n = 0;
-                            while (-1!=(n=in.read(buf)))
-                            {
+                            while (-1 != (n = in.read(buf))) {
                                 out.write(buf, 0, n);
                             }
                             out.close();
                             in.close();
                             byte[] response = out.toByteArray();
-                            savePhotoToDisk(response,params[1]);
-                        } catch (Exception e){
+                            savePhotoToDisk(response, params[1]);
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
                         return null;
 
                     }
-                }).execute(photos.get(i),photoName);
+                }).execute(photos.get(i), photoName);
             }
         }
     }
 
-    private void saveToJsonCatalog(String json){
+    private void saveToJsonCatalog(String json) {
         try {
             final String album = getIntent().getStringExtra("album");
             final String photoPath = getApplicationContext().getFilesDir().getPath() + "/" + album + "/";
@@ -315,27 +307,26 @@ public class ViewAlbum extends AppCompatActivity {
         }
     }
 
-    private void savePhotoToDisk(byte[] photoBytes, String photoName){
+    private void savePhotoToDisk(byte[] photoBytes, String photoName) {
         final String album = getIntent().getStringExtra("album");
         final String photoPath = getApplicationContext().getFilesDir().getPath() + "/" + album + "/";
-        File photo=new File(photoPath + photoName + ".jpg");
+        File photo = new File(photoPath + photoName + ".jpg");
         try {
             if (!photo.exists()) {
                 photo.createNewFile();
             }
-            FileOutputStream fos=new FileOutputStream(photo.getPath());
+            FileOutputStream fos = new FileOutputStream(photo.getPath());
 
             fos.write(photoBytes);
             fos.close();
-            Log.d("FODASSE",photoName + " was written to folder");
-        }
-        catch (java.io.IOException e) {
+            Log.d("FODASSE", photoName + " was written to folder");
+        } catch (java.io.IOException e) {
             Log.e("P2PHOTO", "Exception in photoCallback", e);
         }
     }
 
 
-    private boolean savePhoto(String fileName){
+    private boolean savePhoto(String fileName) {
         List<String> savedPhotos = null;
         try {
             final String album = getIntent().getStringExtra("album");
@@ -349,8 +340,8 @@ public class ViewAlbum extends AppCompatActivity {
                 sb.append(line);
             }
             Gson gson = new Gson(); // Or use new GsonBuilder().create();
-            Log.d("FODASSE",sb.toString());
-            if(sb.toString().equals("")){
+            Log.d("FODASSE", sb.toString());
+            if (sb.toString().equals("")) {
                 savedPhotos = new ArrayList<String>();
             } else {
                 savedPhotos = gson.fromJson(sb.toString(), List.class);
@@ -359,23 +350,18 @@ public class ViewAlbum extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        if(!savedPhotos.contains(fileName)){
+        if (!savedPhotos.contains(fileName)) {
             savedPhotos.add(fileName);
-            Log.d("FODASSE",new Gson().toJson(savedPhotos));
+            Log.d("FODASSE", new Gson().toJson(savedPhotos));
             saveToJsonCatalog(new Gson().toJson(savedPhotos));
             return true;
         } else {
-            Log.d("FODASSE","skipped");
+            Log.d("FODASSE", "skipped");
             return false;
         }
 
 
-
-
-
-
     }
-
 
 
     @Override
@@ -434,7 +420,7 @@ public class ViewAlbum extends AppCompatActivity {
         fetchCatalogs();
     }
 
-    private void fetchCatalogs(){
+    private void fetchCatalogs() {
         final String album = getIntent().getStringExtra("album");
         final String apiUrl = Config.getConfigValue(this, "api_url");
         final String sp = Config.getConfigValue(this, "shared_preferences");
@@ -461,7 +447,7 @@ public class ViewAlbum extends AppCompatActivity {
                                 Log.d(URL_FEED2, "Gson converted to map: " + map.toString());
 
                                 List<String> catalogs = (List<String>) map.get("catalogs");
-                                Log.d("FODASSE","YEEEEEEP 1");
+                                Log.d("FODASSE", "YEEEEEEP 1");
                                 catalogProcessor(catalogs);
                                 if (!(boolean) map.get("success")) {
                                     Toast.makeText(getApplicationContext(), "Huge Problem Occured", Toast.LENGTH_SHORT).show();
@@ -483,16 +469,16 @@ public class ViewAlbum extends AppCompatActivity {
         }
     }
 
-    private void catalogProcessor(final List<String> catalogs){
+    private void catalogProcessor(final List<String> catalogs) {
         urls = "";
         final CountDownLatch latch = new CountDownLatch(catalogs.size());
-        for(int i =0; i < catalogs.size() ; i++){
+        for (int i = 0; i < catalogs.size(); i++) {
             AsyncHttpClient client = new AsyncHttpClient();
             client.get(catalogs.get(i), new AsyncHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, byte[] response) {
                     urls += new String(response);
-                    Log.d("FODASSE","YEEEEEEP 2");
+                    Log.d("FODASSE", "YEEEEEEP 2");
                     writePhotos();
                     latch.countDown();
                 }

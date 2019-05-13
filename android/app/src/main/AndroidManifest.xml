@@ -4,7 +4,7 @@
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <!-- TODO REMOVE cleartext true when implementing security features -->
     <application
@@ -13,8 +13,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:usesCleartextTraffic="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
         <activity android:name=".AddUserToAlbum"></activity>
         <activity android:name=".ViewAlbum" />
         <activity android:name=".FindUser" />
@@ -25,11 +25,11 @@
         <activity android:name=".CreateAlbum" />
         <activity android:name=".ListAlbums" />
         <activity android:name=".AddUser" />
-        <activity android:name=".ShowUsers"/>
-        <activity android:name=".ShowUserAlbums"/>
-        <activity android:name=".ShowAllUsers"/>
-        <activity android:name=".ViewPhotos"/>
-        <activity android:name=".ViewPhoto"/>
+        <activity android:name=".ShowUsers" />
+        <activity android:name=".ShowUserAlbums" />
+        <activity android:name=".ShowAllUsers" />
+        <activity android:name=".ViewPhotos" />
+        <activity android:name=".ViewPhoto" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -40,10 +40,11 @@
         <activity
             android:name="com.dropbox.core.android.AuthActivity"
             android:configChanges="orientation|keyboard"
-            android:launchMode="singleTask" >
+            android:launchMode="singleTask">
             <intent-filter>
                 <data android:scheme="db-3izhx7xtgnuua5m" />
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>

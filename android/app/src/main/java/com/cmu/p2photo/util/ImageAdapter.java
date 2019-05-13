@@ -4,16 +4,11 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.graphics.drawable.Drawable;
-import android.media.ExifInterface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-
-import com.cmu.p2photo.R;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,6 +21,7 @@ public class ImageAdapter extends BaseAdapter {
     private Context context;
     private List<String> list = new ArrayList<>();
     private String photoPath;
+
     public ImageAdapter(Context c, String path) {
         context = c;
         try {
@@ -35,7 +31,7 @@ public class ImageAdapter extends BaseAdapter {
 
             for (int i = 0; i < listOfFiles.length; i++) {
                 if (listOfFiles[i].isFile()) {
-                    if(listOfFiles[i].getName().contains(".jpg")){
+                    if (listOfFiles[i].getName().contains(".jpg")) {
                         list.add(listOfFiles[i].getName());
                     }
                 } else if (listOfFiles[i].isDirectory()) {
@@ -78,7 +74,7 @@ public class ImageAdapter extends BaseAdapter {
             InputStream ims = new FileInputStream(new File(photoPath + list.get(position)));
             Matrix matrix = new Matrix();
             matrix.postRotate(90);
-            Bitmap torto =  BitmapFactory.decodeStream(ims);
+            Bitmap torto = BitmapFactory.decodeStream(ims);
             Bitmap bitmap = Bitmap.createBitmap(torto, 0, 0, torto.getWidth(), torto.getHeight(), matrix, true);
             img.setImageBitmap(bitmap);
 
@@ -86,4 +82,5 @@ public class ImageAdapter extends BaseAdapter {
             e.printStackTrace();
         }
         return img;
-    }}
+    }
+}
