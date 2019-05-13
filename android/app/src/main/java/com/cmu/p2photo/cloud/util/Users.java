@@ -1,4 +1,4 @@
-package com.cmu.p2photo.util;
+package com.cmu.p2photo.cloud.util;
 
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;

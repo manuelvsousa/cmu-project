@@ -1,4 +1,4 @@
-package com.cmu.p2photo.util;
+package com.cmu.p2photo.cloud.util;
 
 import android.content.Context;
 import android.content.res.Resources;

@@ -1,4 +1,4 @@
-package com.cmu.p2photo;
+package com.cmu.p2photo.cloud;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,9 +9,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.cmu.p2photo.drive.DropboxClientFactory;
-import com.cmu.p2photo.drive.PicassoClient;
-import com.cmu.p2photo.util.Config;
+import com.cmu.p2photo.MainActivity;
+import com.cmu.p2photo.R;
+import com.cmu.p2photo.cloud.dropbox.DropboxClientFactory;
+import com.cmu.p2photo.cloud.dropbox.PicassoClient;
+import com.cmu.p2photo.cloud.util.Config;
 import com.dropbox.core.android.AuthActivity;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;

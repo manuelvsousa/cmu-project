@@ -1,17 +1,15 @@
-package com.cmu.p2photo;
+package com.cmu.p2photo.cloud;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.cmu.p2photo.util.Config;
+import com.cmu.p2photo.R;
+import com.cmu.p2photo.cloud.util.Config;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -26,14 +24,14 @@ import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.entity.StringEntity;
 
 
-public class ShowAllUsers extends AppCompatActivity {
-    private static final String URL_FEED = "user/list";
+public class ShowUserAlbums extends AppCompatActivity {
+    private static final String URL_FEED = "user/album/list";
     ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_all_users);
+        setContentView(R.layout.activity_user_albums);
 
         // Get ListView object from xml
         listView = (ListView) findViewById(R.id.listView);
@@ -53,8 +51,9 @@ public class ShowAllUsers extends AppCompatActivity {
             if (token == null) {
                 throw new RuntimeException("Session Token not found in Shared Preferences");
             }
-            final String album = getIntent().getStringExtra("album");
+            final String user = getIntent().getStringExtra("user");
             jsonParams.put("token", token);
+            jsonParams.put("user", user);
             StringEntity entity = new StringEntity(jsonParams.toString());
             AsyncHttpClient client = new AsyncHttpClient();
             client.post(getApplicationContext(), apiUrl + URL_FEED, entity, "application/json",
@@ -67,8 +66,8 @@ public class ShowAllUsers extends AppCompatActivity {
                                 map = (Map<String, Object>) gson.fromJson(response.toString(), map.getClass());
                                 Log.d(URL_FEED, "Gson converted to map: " + map.toString());
 
-                                List<String> users = (List<String>) map.get("users");
-                                callback(users);
+                                List<String> albums = (List<String>) map.get("albums");
+                                callback(albums);
                                 if (!(boolean) map.get("success")) {
                                     Toast.makeText(getApplicationContext(), "Huge Problem Occured", Toast.LENGTH_SHORT).show();
                                 }
@@ -102,27 +101,5 @@ public class ShowAllUsers extends AppCompatActivity {
 
         // Assign adapter to ListView
         listView.setAdapter(adapter);
-
-
-        // ListView Item Click Listener
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-
-                // ListView Clicked item index
-                int itemPosition = position;
-
-                // ListView Clicked item value
-                String itemValue = (String) listView.getItemAtPosition(position);
-
-                Intent intent = new Intent(ShowAllUsers.this, ShowUserAlbums.class);
-                intent.putExtra("user", itemValue);
-                startActivity(intent);
-
-            }
-
-        });
     }
 }

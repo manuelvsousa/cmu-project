@@ -1,4 +1,4 @@
-package com.cmu.p2photo.util;
+package com.cmu.p2photo.cloud.util;
 
 import android.annotation.SuppressLint;
 import android.content.ContentUris;

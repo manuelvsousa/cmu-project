@@ -1,4 +1,4 @@
-package com.cmu.p2photo;
+package com.cmu.p2photo.cloud;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -6,6 +6,8 @@ import android.graphics.Matrix;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
+
+import com.cmu.p2photo.R;
 
 import java.io.File;
 import java.io.FileInputStream;

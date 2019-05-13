@@ -1,14 +1,17 @@
-package com.cmu.p2photo;
+package com.cmu.p2photo.cloud;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
-import com.cmu.p2photo.util.Config;
+import com.cmu.p2photo.R;
+import com.cmu.p2photo.cloud.util.Config;
+import com.dropbox.core.android.Auth;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -16,45 +19,49 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import org.json.JSONObject;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.entity.StringEntity;
 
-
-public class ShowUsers extends AppCompatActivity {
-    private static final String URL_FEED = "album/user/list";
-    ListView listView;
+public class Dropbox extends AppCompatActivity {
+    private static final String URL_FEED = "user/register/drive";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_album_users);
+        setContentView(R.layout.activity_dropbox);
+        final String dropbox_key = Config.getConfigValue(this, "dropbox_key");
+        Button loginButton = findViewById(R.id.LogInButton);
+        Log.d("PASSOU", "PASSOU AQUI");
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Auth.startOAuth2Authentication(Dropbox.this, dropbox_key);
+            }
+        });
+    }
 
-        // Get ListView object from xml
-        listView = (ListView) findViewById(R.id.listView);
-
-
+    @Override
+    protected void onResume() {
+        super.onResume();
         final String apiUrl = Config.getConfigValue(this, "api_url");
         final String sp = Config.getConfigValue(this, "shared_preferences");
-
-
-
-
-        /* get albums from user */
+        SharedPreferences prefs = getSharedPreferences(sp, MODE_PRIVATE);
+        String accessToken = Auth.getOAuth2Token();
+        SharedPreferences.Editor editor = getSharedPreferences(sp, MODE_PRIVATE).edit();
+        editor.putString("dropbox", accessToken);
+        editor.apply();
         try {
+            AsyncHttpClient client = new AsyncHttpClient();
             JSONObject jsonParams = new JSONObject();
-            SharedPreferences prefs = getSharedPreferences(sp, MODE_PRIVATE);
-            String token = prefs.getString("token", null);
-            if (token == null) {
+            String sessionToken = prefs.getString("token", null);
+            if (sessionToken == null) {
                 throw new RuntimeException("Session Token not found in Shared Preferences");
             }
-            final String album = getIntent().getStringExtra("album");
-            jsonParams.put("token", token);
-            jsonParams.put("albumName", album);
+            jsonParams.put("dropbox", accessToken);
+            jsonParams.put("token", sessionToken);
             StringEntity entity = new StringEntity(jsonParams.toString());
-            AsyncHttpClient client = new AsyncHttpClient();
             client.post(getApplicationContext(), apiUrl + URL_FEED, entity, "application/json",
                     new JsonHttpResponseHandler() {
                         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -64,11 +71,13 @@ public class ShowUsers extends AppCompatActivity {
                                 Map<String, Object> map = new HashMap<>();
                                 map = (Map<String, Object>) gson.fromJson(response.toString(), map.getClass());
                                 Log.d(URL_FEED, "Gson converted to map: " + map.toString());
-
-                                List<String> users = (List<String>) map.get("users");
-                                callback(users);
-                                if (!(boolean) map.get("success")) {
-                                    Toast.makeText(getApplicationContext(), "Huge Problem Occured", Toast.LENGTH_SHORT).show();
+                                if ((boolean) map.get("success")) {
+                                    Intent intent = new Intent(Dropbox.this, P2photo.class);
+                                    startActivity(intent);
+                                    finish();
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "Not Welcome", Toast.LENGTH_SHORT).show();
+                                    Log.d(URL_FEED, "Could not save dropbox token in server" + map.get("token"));
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -79,26 +88,12 @@ public class ShowUsers extends AppCompatActivity {
                             Gson gson = new Gson();
                             Map<String, Object> map = new HashMap<>();
                             map = (Map<String, Object>) gson.fromJson(errorResponse.toString(), map.getClass());
-                            Toast.makeText(getApplicationContext(), map.get("message").toString(), Toast.LENGTH_SHORT).show();
                         }
                     });
+
         } catch (Exception e) {
             e.printStackTrace();
         }
-        /* end get albuns from user */
     }
 
-    void callback(List<String> users) {
-
-        // Initialize a new ArrayAdapter
-        ArrayAdapter<String> adapter = new ArrayAdapter(
-                this,
-                android.R.layout.simple_list_item_1,
-                users
-        );
-
-
-        // Assign adapter to ListView
-        listView.setAdapter(adapter);
-    }
 }

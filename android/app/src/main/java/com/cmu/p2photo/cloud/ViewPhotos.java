@@ -1,4 +1,4 @@
-package com.cmu.p2photo;
+package com.cmu.p2photo.cloud;
 
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -10,8 +10,9 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
-import com.cmu.p2photo.util.Config;
-import com.cmu.p2photo.util.ImageAdapter;
+import com.cmu.p2photo.R;
+import com.cmu.p2photo.cloud.util.Config;
+import com.cmu.p2photo.cloud.util.ImageAdapter;
 
 import java.io.File;
 import java.util.ArrayList;

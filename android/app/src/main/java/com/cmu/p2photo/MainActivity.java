@@ -11,7 +11,10 @@ import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.Toast;
 
-import com.cmu.p2photo.util.Config;
+import com.cmu.p2photo.cloud.Dropbox;
+import com.cmu.p2photo.cloud.P2photo;
+import com.cmu.p2photo.cloud.util.Config;
+import com.cmu.p2photo.wifi.WifiDirect;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;

@@ -1,4 +1,4 @@
-package com.cmu.p2photo;
+package com.cmu.p2photo.cloud;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -23,10 +23,11 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.cmu.p2photo.drive.CreateFileTask;
-import com.cmu.p2photo.drive.DropboxClientFactory;
-import com.cmu.p2photo.drive.UploadFileTask;
-import com.cmu.p2photo.util.Config;
+import com.cmu.p2photo.R;
+import com.cmu.p2photo.cloud.dropbox.CreateFileTask;
+import com.cmu.p2photo.cloud.dropbox.DropboxClientFactory;
+import com.cmu.p2photo.cloud.dropbox.UploadFileTask;
+import com.cmu.p2photo.cloud.util.Config;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;

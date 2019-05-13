@@ -1,4 +1,4 @@
-package com.cmu.p2photo.drive;
+package com.cmu.p2photo.cloud.dropbox;
 
 import android.content.Context;
 import android.os.AsyncTask;

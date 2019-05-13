@@ -1,4 +1,4 @@
-package com.cmu.p2photo;
+package com.cmu.p2photo.cloud;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,7 +10,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.cmu.p2photo.util.Config;
+import com.cmu.p2photo.R;
+import com.cmu.p2photo.cloud.util.Config;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;

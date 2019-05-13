@@ -1,4 +1,4 @@
-package com.cmu.p2photo.drive;
+package com.cmu.p2photo.cloud.dropbox;
 
 import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.http.OkHttp3Requestor;

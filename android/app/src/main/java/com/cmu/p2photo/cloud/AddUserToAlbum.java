@@ -1,7 +1,9 @@
-package com.cmu.p2photo;
+package com.cmu.p2photo.cloud;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+
+import com.cmu.p2photo.R;
 
 public class AddUserToAlbum extends AppCompatActivity {
 
