@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -40,10 +41,18 @@ import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -59,6 +68,7 @@ public class ViewAlbum extends AppCompatActivity {
     private static final String URL_FEED = "album/user/add/dropbox";
     private static final String URL_FEED2 = "/album/catalog/list";
     private String urls = new String();
+    private static final String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private Boolean isWifi = false;
 
     @SuppressLint("NewApi")
@@ -146,22 +156,15 @@ public class ViewAlbum extends AppCompatActivity {
             }
         });
 
-       if(this.isWifi){
-
-//TODO
-       } else {
            Button viewPhotos = findViewById(R.id.viewPhotos);
            viewPhotos.setOnClickListener(new View.OnClickListener() {
                @Override
                public void onClick(View v) {
                    Intent intent = new Intent(ViewAlbum.this, ViewPhotos.class);
-                   intent.putExtra("photos", urls);
                    intent.putExtra("album", album);
                    startActivity(intent);
                }
            });
-       }
-
 
 
 
@@ -171,16 +174,21 @@ public class ViewAlbum extends AppCompatActivity {
             File dir = new File(photoPath);
 
             if (!dir.exists()) {
-                Log.d("FODASSE", photoPath + " was created");
                 dir.mkdir();
+                Log.d("FODASSE", photoPath + " was created");
                 File file = new File(photoPath + "catalog");
-                try {
-                    if (file.createNewFile()) {
-                        //good, created
+                if(!file.exists()){
+                    try{
+                        file.createNewFile();
+                        Log.d("FODASSE", photoPath + "catalog was created");
+                    }catch (Exception e){
+                        e.printStackTrace();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } else {
+                    Log.d("FODASSE", photoPath + "catalog already exists");
                 }
+            } else {
+                Log.d("FODASSE", photoPath + " already exists");
             }
 
         } else {
@@ -408,6 +416,38 @@ public class ViewAlbum extends AppCompatActivity {
         }
     }
 
+    private void copyFileUsingStream(File source, File dest) throws IOException {
+        InputStream is = null;
+        OutputStream os = null;
+        if (!dest.getParentFile().exists())
+            dest.getParentFile().mkdirs();
+        if (!dest.exists())
+            dest.createNewFile();
+        try {
+            is = new FileInputStream(source);
+            os = new FileOutputStream(dest);
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = is.read(buffer)) > 0) {
+                os.write(buffer, 0, length);
+            }
+        } finally {
+            is.close();
+            os.close();
+        }
+    }
+
+
+
+    public static String randomAlphaNumeric(int count) {
+        StringBuilder builder = new StringBuilder();
+        while (count-- != 0) {
+            int character = (int) (Math.random() * ALPHA_NUMERIC_STRING.length());
+            builder.append(ALPHA_NUMERIC_STRING.charAt(character));
+        }
+        return builder.toString();
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -425,7 +465,43 @@ public class ViewAlbum extends AppCompatActivity {
                         }
 
                         final String album = getIntent().getStringExtra("album");
-                        // TODO copy photo to new album
+                        final String photoPath = getApplicationContext().getFilesDir().getPath() + "/wifi/" + album + "/";
+                        String[] splitedPhotoPath = path.split("/");
+                        final String fileName = randomAlphaNumeric(32) + splitedPhotoPath[splitedPhotoPath.length - 1];
+                        Log.d("FODASSE","wifi mode onActivityResult");
+                        Log.d("FODASSE",path);
+                        Log.d("FODASSE",photoPath + fileName);
+                        copyFileUsingStream(new File(path),new File(photoPath + fileName));
+                        Log.d("FODASSE","copyFileUsingStream done");
+
+
+                        FileWriter fw = new FileWriter(photoPath + "catalog",true); //the true will append the new data
+                        fw.write("," + fileName);//appends the string to the file
+                        fw.close();
+
+                        Log.d("FODASSE","photo file name written to catalog");
+
+
+//                        File file = new File(photoPath + "catalog");
+//
+//                        StringBuilder text = new StringBuilder();
+//
+//                        try {
+//                            BufferedReader br = new BufferedReader(new FileReader(file));
+//                            String line;
+//
+//                            while ((line = br.readLine()) != null) {
+//                                text.append(line);
+//                                text.append('\n');
+//                            }
+//                            br.close();
+//                        }
+//                        catch (IOException e) {
+//                            //You'll need to add proper error handling here
+//                        }
+//
+//                        Log.d("FODASSE",text.toString());
+
 
 
                     }

@@ -1,6 +1,7 @@
 package com.cmu.p2photo.cloud;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -24,13 +25,21 @@ public class ViewPhotos extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_photos);
-        final String apiUrl = Config.getConfigValue(this, "api_url");
         final String sp = Config.getConfigValue(this, "shared_preferences");
         final String album = getIntent().getStringExtra("album");
-
-        Log.d("FODASSE", getApplicationContext().getFilesDir().getPath());
+        SharedPreferences prefs = getSharedPreferences(sp, MODE_PRIVATE);
+        final boolean isWifi = prefs.getBoolean("wifi", false);
         final GridView gridView = findViewById(R.id.gridview);
-        final String photoPath = getApplicationContext().getFilesDir().getPath() + "/" + album + "/";
+        String photoPathNotFinal;
+        Log.d("FODASSE", getApplicationContext().getFilesDir().getPath());
+        if(isWifi){
+            photoPathNotFinal = getApplicationContext().getFilesDir().getPath() + "/wifi/" + album + "/";
+        } else {
+            photoPathNotFinal = getApplicationContext().getFilesDir().getPath() + "/" + album + "/";
+        }
+        final String photoPath = photoPathNotFinal;
+
+
         ImageAdapter gridAdapter = (new ImageAdapter(this, photoPath));
         gridView.setAdapter(gridAdapter);
         (new AsyncTask<Void, Void, Void>() {
