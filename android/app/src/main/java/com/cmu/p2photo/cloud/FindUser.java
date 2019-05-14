@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.cmu.p2photo.R;
+import com.cmu.p2photo.ViewAlbum;
 
 public class FindUser extends AppCompatActivity {
 

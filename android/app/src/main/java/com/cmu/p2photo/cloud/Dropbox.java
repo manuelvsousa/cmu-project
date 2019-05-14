@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.cmu.p2photo.P2photo;
 import com.cmu.p2photo.R;
 import com.cmu.p2photo.cloud.util.Config;
 import com.dropbox.core.android.Auth;

@@ -1,4 +1,4 @@
-package com.cmu.p2photo.cloud;
+package com.cmu.p2photo;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -23,7 +23,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.cmu.p2photo.R;
+import com.cmu.p2photo.cloud.ViewPhotos;
 import com.cmu.p2photo.cloud.dropbox.CreateFileTask;
 import com.cmu.p2photo.cloud.dropbox.DropboxClientFactory;
 import com.cmu.p2photo.cloud.dropbox.UploadFileTask;
@@ -59,6 +59,7 @@ public class ViewAlbum extends AppCompatActivity {
     private static final String URL_FEED = "album/user/add/dropbox";
     private static final String URL_FEED2 = "/album/catalog/list";
     private String urls = new String();
+    private Boolean isWifi = false;
 
     @SuppressLint("NewApi")
     public static String getRealPathFromURI(Context context, Uri uri) {
@@ -93,6 +94,8 @@ public class ViewAlbum extends AppCompatActivity {
         setContentView(R.layout.activity_view_album);
         final String apiUrl = Config.getConfigValue(this, "api_url");
         final String sp = Config.getConfigValue(this, "shared_preferences");
+        SharedPreferences prefs = getSharedPreferences(sp, MODE_PRIVATE);
+        this.isWifi = prefs.getBoolean("wifi", false);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                 && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
@@ -143,71 +146,99 @@ public class ViewAlbum extends AppCompatActivity {
             }
         });
 
-        Button viewPhotos = findViewById(R.id.viewPhotos);
-        viewPhotos.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ViewAlbum.this, ViewPhotos.class);
-                intent.putExtra("photos", urls);
-                intent.putExtra("album", album);
-                startActivity(intent);
-            }
-        });
+       if(this.isWifi){
 
-        new CreateFileTask(getApplicationContext(), DropboxClientFactory.getClient(), new CreateFileTask.Callback() {
-            @Override
-            public void onUploadComplete(String result) {
+//TODO
+       } else {
+           Button viewPhotos = findViewById(R.id.viewPhotos);
+           viewPhotos.setOnClickListener(new View.OnClickListener() {
+               @Override
+               public void onClick(View v) {
+                   Intent intent = new Intent(ViewAlbum.this, ViewPhotos.class);
+                   intent.putExtra("photos", urls);
+                   intent.putExtra("album", album);
+                   startActivity(intent);
+               }
+           });
+       }
 
+
+
+
+        if(this.isWifi){
+            final String photoPath = getApplicationContext().getFilesDir().getPath() + "/wifi/" + album + "/";
+
+            File dir = new File(photoPath);
+
+            if (!dir.exists()) {
+                Log.d("FODASSE", photoPath + " was created");
+                dir.mkdir();
+                File file = new File(photoPath + "catalog");
                 try {
-                    JSONObject jsonParams = new JSONObject();
-                    SharedPreferences prefs = getSharedPreferences(sp, MODE_PRIVATE);
-                    String token = prefs.getString("token", null);
-                    if (token == null) {
-                        throw new RuntimeException("Session Token not found in Shared Preferences");
+                    if (file.createNewFile()) {
+                        //good, created
                     }
-
-                    jsonParams.put("token", token);
-                    jsonParams.put("albumName", album);
-                    jsonParams.put("link", result);
-                    StringEntity entity = new StringEntity(jsonParams.toString());
-                    AsyncHttpClient client = new AsyncHttpClient();
-                    client.post(getApplicationContext(), apiUrl + URL_FEED, entity, "application/json",
-                            new JsonHttpResponseHandler() {
-                                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                                    Log.d(URL_FEED, "response raw: " + response.toString());
-                                    try {
-                                        Gson gson = new Gson();
-                                        Map<String, Object> map = new HashMap<>();
-                                        map = (Map<String, Object>) gson.fromJson(response.toString(), map.getClass());
-
-                                        Log.d(URL_FEED, "Gson converted to map: " + map.toString());
-                                        if (!(boolean) map.get("success")) {
-                                            Toast.makeText(getApplicationContext(), "Huge Problem Occured", Toast.LENGTH_SHORT).show();
-                                        }
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-
-                                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                                    Gson gson = new Gson();
-                                    Map<String, Object> map = new HashMap<>();
-                                    map = (Map<String, Object>) gson.fromJson(errorResponse.toString(), map.getClass());
-                                    Toast.makeText(getApplicationContext(), map.get("message").toString(), Toast.LENGTH_SHORT).show();
-                                }
-                            });
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
 
-            @Override
-            public void onError(Exception e) {
-                Log.e(URL_FEED, "Failed to upload file.", e);
-            }
-        }).execute("/" + album);
-        fetchCatalogs();
+        } else {
+            new CreateFileTask(getApplicationContext(), DropboxClientFactory.getClient(), new CreateFileTask.Callback() {
+                @Override
+                public void onUploadComplete(String result) {
+
+                    try {
+                        JSONObject jsonParams = new JSONObject();
+                        SharedPreferences prefs = getSharedPreferences(sp, MODE_PRIVATE);
+                        String token = prefs.getString("token", null);
+                        if (token == null) {
+                            throw new RuntimeException("Session Token not found in Shared Preferences");
+                        }
+
+                        jsonParams.put("token", token);
+                        jsonParams.put("albumName", album);
+                        jsonParams.put("link", result);
+                        StringEntity entity = new StringEntity(jsonParams.toString());
+                        AsyncHttpClient client = new AsyncHttpClient();
+                        client.post(getApplicationContext(), apiUrl + URL_FEED, entity, "application/json",
+                                new JsonHttpResponseHandler() {
+                                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                                        Log.d(URL_FEED, "response raw: " + response.toString());
+                                        try {
+                                            Gson gson = new Gson();
+                                            Map<String, Object> map = new HashMap<>();
+                                            map = (Map<String, Object>) gson.fromJson(response.toString(), map.getClass());
+
+                                            Log.d(URL_FEED, "Gson converted to map: " + map.toString());
+                                            if (!(boolean) map.get("success")) {
+                                                Toast.makeText(getApplicationContext(), "Huge Problem Occured", Toast.LENGTH_SHORT).show();
+                                            }
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+
+                                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                                        Gson gson = new Gson();
+                                        Map<String, Object> map = new HashMap<>();
+                                        map = (Map<String, Object>) gson.fromJson(errorResponse.toString(), map.getClass());
+                                        Toast.makeText(getApplicationContext(), map.get("message").toString(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    Log.e(URL_FEED, "Failed to upload file.", e);
+                }
+            }).execute("/" + album);
+            fetchCatalogs();
+        }
     }
 
 
@@ -380,45 +411,79 @@ public class ViewAlbum extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        try {
-            if (resultCode == RESULT_OK) {
-                if (requestCode == 1) {
-                    Uri selectedImageUri = data.getData();
-                    // Get the path from the Uri
-                    final String path = getRealPathFromURI(getApplicationContext(), selectedImageUri);
-                    if (path != null) {
-                        File f = new File(path);
-                        selectedImageUri = Uri.fromFile(f);
+
+        if(this.isWifi){
+            try {
+                if (resultCode == RESULT_OK) {
+                    if (requestCode == 1) {
+                        Uri selectedImageUri = data.getData();
+                        // Get the path from the Uri
+                        final String path = getRealPathFromURI(getApplicationContext(), selectedImageUri);
+                        if (path != null) {
+                            File f = new File(path);
+                            selectedImageUri = Uri.fromFile(f);
+                        }
+
+                        final String album = getIntent().getStringExtra("album");
+                        // TODO copy photo to new album
+
+
                     }
+                }
+            } catch (Exception e) {
+                Log.e("FileSelectorActivity", "File select error", e);
+            }
 
 
-                    final String album = getIntent().getStringExtra("album");
-                    // Set the image in ImageView
-                    new UploadFileTask(getApplicationContext(), DropboxClientFactory.getClient(), new UploadFileTask.Callback() {
-                        @Override
-                        public void onUploadComplete(String result) {
-                            fetchCatalogs();
-                            Toast.makeText(getApplicationContext(), "Image uploaded with success", Toast.LENGTH_SHORT).show();
+
+        } else {
+            try {
+                if (resultCode == RESULT_OK) {
+                    if (requestCode == 1) {
+                        Uri selectedImageUri = data.getData();
+                        // Get the path from the Uri
+                        final String path = getRealPathFromURI(getApplicationContext(), selectedImageUri);
+                        if (path != null) {
+                            File f = new File(path);
+                            selectedImageUri = Uri.fromFile(f);
                         }
 
-                        @Override
-                        public void onError(Exception e) {
-                            Log.e("P2PHOTO", "Failed to upload file.", e);
-                        }
-                    }).execute(path, album, getApplicationContext().getFilesDir().getPath());
+
+                        final String album = getIntent().getStringExtra("album");
+                        // Set the image in ImageView
+                        new UploadFileTask(getApplicationContext(), DropboxClientFactory.getClient(), new UploadFileTask.Callback() {
+                            @Override
+                            public void onUploadComplete(String result) {
+                                fetchCatalogs();
+                                Toast.makeText(getApplicationContext(), "Image uploaded with success", Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void onError(Exception e) {
+                                Log.e("P2PHOTO", "Failed to upload file.", e);
+                            }
+                        }).execute(path, album, getApplicationContext().getFilesDir().getPath());
 
 //
+                    }
                 }
+            } catch (Exception e) {
+                Log.e("FileSelectorActivity", "File select error", e);
             }
-        } catch (Exception e) {
-            Log.e("FileSelectorActivity", "File select error", e);
         }
+
+
+
+
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        fetchCatalogs();
+        if(!this.isWifi){
+            fetchCatalogs();
+        }
     }
 
     private void fetchCatalogs() {

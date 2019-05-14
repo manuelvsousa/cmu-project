@@ -1,14 +1,16 @@
-package com.cmu.p2photo.cloud;
+package com.cmu.p2photo;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.cmu.p2photo.R;
 import com.cmu.p2photo.cloud.util.Config;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
@@ -24,14 +26,14 @@ import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.entity.StringEntity;
 
 
-public class ShowUsers extends AppCompatActivity {
-    private static final String URL_FEED = "album/user/list";
+public class ShowAllUsers extends AppCompatActivity {
+    private static final String URL_FEED = "user/list";
     ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_album_users);
+        setContentView(R.layout.activity_all_users);
 
         // Get ListView object from xml
         listView = (ListView) findViewById(R.id.listView);
@@ -53,7 +55,6 @@ public class ShowUsers extends AppCompatActivity {
             }
             final String album = getIntent().getStringExtra("album");
             jsonParams.put("token", token);
-            jsonParams.put("albumName", album);
             StringEntity entity = new StringEntity(jsonParams.toString());
             AsyncHttpClient client = new AsyncHttpClient();
             client.post(getApplicationContext(), apiUrl + URL_FEED, entity, "application/json",
@@ -101,5 +102,27 @@ public class ShowUsers extends AppCompatActivity {
 
         // Assign adapter to ListView
         listView.setAdapter(adapter);
+
+
+        // ListView Item Click Listener
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+
+                // ListView Clicked item index
+                int itemPosition = position;
+
+                // ListView Clicked item value
+                String itemValue = (String) listView.getItemAtPosition(position);
+
+                Intent intent = new Intent(ShowAllUsers.this, ShowUserAlbums.class);
+                intent.putExtra("user", itemValue);
+                startActivity(intent);
+
+            }
+
+        });
     }
 }

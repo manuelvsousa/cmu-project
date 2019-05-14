@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.cmu.p2photo">
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
@@ -14,20 +15,21 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
+        tools:replace="android:icon"
         android:usesCleartextTraffic="true">
-        <activity android:name=".cloud.AddUserToAlbum"></activity>
-        <activity android:name=".cloud.ViewAlbum" />
+        <activity android:name=".AddUserToAlbum"></activity>
+        <activity android:name=".ViewAlbum" />
         <activity android:name=".cloud.FindUser" />
-        <activity android:name=".cloud.P2photo" />
+        <activity android:name=".P2photo" />
         <activity android:name=".Sign_up" />
         <activity android:name=".wifi.WifiDirect" />
         <activity android:name=".cloud.Dropbox" />
-        <activity android:name=".cloud.CreateAlbum" />
-        <activity android:name=".cloud.ListAlbums" />
-        <activity android:name=".cloud.AddUser" />
-        <activity android:name=".cloud.ShowUsers" />
-        <activity android:name=".cloud.ShowUserAlbums" />
-        <activity android:name=".cloud.ShowAllUsers" />
+        <activity android:name=".CreateAlbum" />
+        <activity android:name=".ListAlbums" />
+        <activity android:name=".AddUser" />
+        <activity android:name=".ShowUsers" />
+        <activity android:name=".ShowUserAlbums" />
+        <activity android:name=".ShowAllUsers" />
         <activity android:name=".cloud.ViewPhotos" />
         <activity android:name=".cloud.ViewPhoto" />
         <activity android:name=".MainActivity">

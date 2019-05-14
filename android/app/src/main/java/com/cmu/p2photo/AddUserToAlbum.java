@@ -1,4 +1,4 @@
-package com.cmu.p2photo.cloud;
+package com.cmu.p2photo;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
