@@ -1,4 +1,4 @@
-package com.cmu.p2photo.cloud;
+package com.cmu.p2photo;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,7 +11,6 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
-import com.cmu.p2photo.R;
 import com.cmu.p2photo.cloud.util.Config;
 import com.cmu.p2photo.cloud.util.ImageAdapter;
 

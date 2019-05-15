@@ -1,4 +1,4 @@
-package com.cmu.p2photo.cloud;
+package com.cmu.p2photo;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

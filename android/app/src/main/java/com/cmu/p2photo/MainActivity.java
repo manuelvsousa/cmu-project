@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
                                         SharedPreferences.Editor editor = getSharedPreferences(sp, MODE_PRIVATE).edit();
                                         editor.clear().commit();
                                         editor.putString("token", map.get("token").toString());
+                                        editor.putString("username", username.getText().toString());
                                         editor.apply();
                                         Log.d(URL_FEED, "Passou: " + map.get("token"));
                                         if ((boolean) map.get("success")) {

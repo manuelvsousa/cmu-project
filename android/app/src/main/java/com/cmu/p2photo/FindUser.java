@@ -1,13 +1,10 @@
-package com.cmu.p2photo.cloud;
+package com.cmu.p2photo;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-
-import com.cmu.p2photo.R;
-import com.cmu.p2photo.ViewAlbum;
 
 public class FindUser extends AppCompatActivity {
 

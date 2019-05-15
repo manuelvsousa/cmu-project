@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.cmu.p2photo.cloud.dropbox.DropboxClientFactory;
 import com.cmu.p2photo.cloud.dropbox.PicassoClient;
 import com.cmu.p2photo.cloud.util.Config;
+import com.cmu.p2photo.wifi.MsgSenderActivity;
 import com.dropbox.core.android.AuthActivity;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
@@ -60,7 +61,27 @@ public class P2photo extends AppCompatActivity {
             tv.setText("Cloud Version");
         }
 
+        Button wifiButton = findViewById(R.id.wifiBT);
+        wifiButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//
+                Intent intent = new Intent(P2photo.this, MsgSenderActivity.class);
+                startActivity(intent);
 
+            }
+        });
+
+        Button logButton = findViewById(R.id.logButton);
+        logButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//
+                Intent intent = new Intent(P2photo.this, ViewLogs.class);
+                startActivity(intent);
+
+            }
+        });
 
         // Logout Listener
         btnLogout.setOnClickListener(new View.OnClickListener() {

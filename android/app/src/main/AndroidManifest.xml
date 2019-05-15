@@ -19,7 +19,7 @@
         android:usesCleartextTraffic="true">
         <activity android:name=".AddUserToAlbum"></activity>
         <activity android:name=".ViewAlbum" />
-        <activity android:name=".cloud.FindUser" />
+        <activity android:name=".FindUser" />
         <activity android:name=".P2photo" />
         <activity android:name=".Sign_up" />
         <activity android:name=".wifi.WifiDirect" />
@@ -29,9 +29,11 @@
         <activity android:name=".AddUser" />
         <activity android:name=".ShowUsers" />
         <activity android:name=".ShowUserAlbums" />
+        <activity android:name=".wifi.MsgSenderActivity" />
         <activity android:name=".ShowAllUsers" />
-        <activity android:name=".cloud.ViewPhotos" />
-        <activity android:name=".cloud.ViewPhoto" />
+        <activity android:name=".ViewPhotos" />
+        <activity android:name=".ViewPhoto" />
+        <activity android:name=".ViewLogs" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -51,6 +53,9 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
+        <service android:name="pt.inesc.termite.wifidirect.service.SimWifiP2pService" />
+
     </application>
 
 </manifest>
