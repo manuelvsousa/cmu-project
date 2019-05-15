@@ -152,15 +152,15 @@ public class ViewAlbum extends AppCompatActivity {
             }
         });
 
-           Button viewPhotos = findViewById(R.id.viewPhotos);
-           viewPhotos.setOnClickListener(new View.OnClickListener() {
-               @Override
-               public void onClick(View v) {
-                   Intent intent = new Intent(ViewAlbum.this, ViewPhotos.class);
-                   intent.putExtra("album", album);
-                   startActivity(intent);
-               }
-           });
+        Button viewPhotos = findViewById(R.id.viewPhotos);
+        viewPhotos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ViewAlbum.this, ViewPhotos.class);
+                intent.putExtra("album", album);
+                startActivity(intent);
+            }
+        });
 
 
 

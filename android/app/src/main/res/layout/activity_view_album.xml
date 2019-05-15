@@ -48,9 +48,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginBottom="13dp"
+        android:layout_marginBottom="11dp"
         android:text="Add Photo"
-        app:layout_constraintBottom_toTopOf="@+id/viewPhotos2"
+        app:layout_constraintBottom_toTopOf="@+id/viewPhotos"
         app:layout_constraintStart_toStartOf="@+id/showUsers"
         app:layout_constraintTop_toBottomOf="@+id/showUsers" />
 
@@ -71,20 +71,10 @@
         android:id="@+id/viewPhotos"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="1dp"
-        android:layout_marginLeft="1dp"
-        android:text="View Photos"
-        app:layout_constraintBaseline_toBaselineOf="@+id/viewPhotos2"
-        app:layout_constraintStart_toStartOf="@+id/showUsers" />
-
-    <Button
-        android:id="@+id/viewPhotos2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="281dp"
+        android:layout_marginBottom="283dp"
         android:text="View Photos"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/viewPhotos"
+        app:layout_constraintStart_toStartOf="@+id/showUsers"
         app:layout_constraintTop_toBottomOf="@+id/addPhoto" />
 
 </android.support.constraint.ConstraintLayout>
