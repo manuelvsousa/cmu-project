@@ -28,11 +28,12 @@ public class ViewPhotos extends AppCompatActivity {
         final String album = getIntent().getStringExtra("album");
         SharedPreferences prefs = getSharedPreferences(sp, MODE_PRIVATE);
         final boolean isWifi = prefs.getBoolean("wifi", false);
+        final String username = prefs.getString("username", null);
         final GridView gridView = findViewById(R.id.gridview);
         String photoPathNotFinal;
         Log.d("FODASSE", getApplicationContext().getFilesDir().getPath());
         if(isWifi){
-            photoPathNotFinal = getApplicationContext().getFilesDir().getPath() + "/wifi/" + album + "/";
+            photoPathNotFinal = getApplicationContext().getFilesDir().getPath() + "/wifi/" + username  + "/" + album + "/";
         } else {
             photoPathNotFinal = getApplicationContext().getFilesDir().getPath() + "/" + album + "/";
         }

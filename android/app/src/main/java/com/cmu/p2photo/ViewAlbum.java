@@ -29,6 +29,8 @@ import com.cmu.p2photo.cloud.dropbox.UploadFileTask;
 import com.cmu.p2photo.cloud.util.Config;
 import com.cmu.p2photo.wifi.MsgSenderActivity;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -41,6 +43,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -162,14 +165,17 @@ public class ViewAlbum extends AppCompatActivity {
 
 
         if(this.isWifi){
-            final String photoPath = getApplicationContext().getFilesDir().getPath() + "/wifi/" + album + "/";
+            String username = prefs.getString("username", null);
+            final String photoPath = getApplicationContext().getFilesDir().getPath() + "/wifi/" + username  + "/" + album + "/";
 
             File dir = new File(photoPath);
 
             if (!dir.exists()) {
                 dir.mkdir();
-                Log.d("FODASSE", photoPath + " was created");
-                File file = new File(photoPath + "catalog");
+                final String catalogPath = getApplicationContext().getFilesDir().getPath() + "/wifi/" + username + "/catalog";
+
+                File file = new File(catalogPath);
+                Log.d("FODASSE", catalogPath + " was created");
                 if(!file.exists()){
                     try{
                         file.createNewFile();
@@ -441,6 +447,23 @@ public class ViewAlbum extends AppCompatActivity {
         return builder.toString();
     }
 
+    private String readFile(String fileName) throws IOException {
+        BufferedReader br = new BufferedReader(new FileReader(fileName));
+        try {
+            StringBuilder sb = new StringBuilder();
+            String line = br.readLine();
+
+            while (line != null) {
+                sb.append(line);
+                sb.append("\n");
+                line = br.readLine();
+            }
+            return sb.toString();
+        } finally {
+            br.close();
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -458,7 +481,10 @@ public class ViewAlbum extends AppCompatActivity {
                         }
 
                         final String album = getIntent().getStringExtra("album");
-                        final String photoPath = getApplicationContext().getFilesDir().getPath() + "/wifi/" + album + "/";
+                        final String sp = Config.getConfigValue(this, "shared_preferences");
+                        SharedPreferences prefs = getSharedPreferences(sp, MODE_PRIVATE);
+                        String username = prefs.getString("username", null);
+                        final String photoPath = getApplicationContext().getFilesDir().getPath() + "/wifi/" + username  + "/" + album + "/";
                         String[] splitedPhotoPath = path.split("/");
                         final String fileName = randomAlphaNumeric(32) + splitedPhotoPath[splitedPhotoPath.length - 1];
                         Log.d("FODASSE","wifi mode onActivityResult");
@@ -467,33 +493,33 @@ public class ViewAlbum extends AppCompatActivity {
                         copyFileUsingStream(new File(path),new File(photoPath + fileName));
                         Log.d("FODASSE","copyFileUsingStream done");
 
+                        final String catalogPath = getApplicationContext().getFilesDir().getPath() + "/wifi/" + username + "/catalog";
+                        Log.d("FODASSE",catalogPath);
 
-                        FileWriter fw = new FileWriter(photoPath + "catalog",true); //the true will append the new data
-                        fw.write("," + fileName);//appends the string to the file
+                        String json = readFile(catalogPath);
+
+                        Map<String, List<String>> events;
+                        Log.d("FODASSE","IN CATALOG FILE: " + json);
+                        if(!json.equals("")){
+                            Log.d("FODASSE","FILE NOT EMPY");
+                            events = new Gson().fromJson(json, new TypeToken<Map<String, ArrayList<String>>>(){}.getType());
+                        } else {
+                            Log.d("FODASSE","FILE EMPTY");
+                            events = new HashMap<>();
+                        }
+                        if(events.containsKey(album)){
+                            events.get(album).add(fileName);
+                        } else {
+                            events.put(album,Arrays.asList(fileName));
+                        }
+                        File fnew=new File(catalogPath);
+                        fnew.createNewFile();
+                        FileWriter fw = new FileWriter(catalogPath);
+                        Gson gson = new GsonBuilder().create();
+                        Log.d("FODASSE",gson.toJson(events));
+                        fw.write(gson.toJson(events));
                         fw.close();
 
-                        Log.d("FODASSE","photo file name written to catalog");
-
-
-//                        File file = new File(photoPath + "catalog");
-//
-//                        StringBuilder text = new StringBuilder();
-//
-//                        try {
-//                            BufferedReader br = new BufferedReader(new FileReader(file));
-//                            String line;
-//
-//                            while ((line = br.readLine()) != null) {
-//                                text.append(line);
-//                                text.append('\n');
-//                            }
-//                            br.close();
-//                        }
-//                        catch (IOException e) {
-//                            //You'll need to add proper error handling here
-//                        }
-//
-//                        Log.d("FODASSE",text.toString());
 
 
 
