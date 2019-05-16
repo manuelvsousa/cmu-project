@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import com.cmu.p2photo.R;
 import com.cmu.p2photo.cloud.util.Config;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.File;
@@ -11,6 +12,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -115,7 +117,18 @@ public class MsgSenderActivity extends Service implements
         new IncommingCommTask().executeOnExecutor(
                 AsyncTask.THREAD_POOL_EXECUTOR);
 
-
+        new Thread(new Runnable() {
+            public void run(){
+                while(true){
+                    try {
+                        Thread.sleep(30000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    PeerinRange();
+                }
+            }
+        }).start();
     }
 
     @Override
@@ -255,18 +268,15 @@ public class MsgSenderActivity extends Service implements
                             catalogown = new HashMap<>();
                         }
 
+                        Log.d("FODASSE","OWN RECEBIDO " + catalogown.toString());
+
                         Map<String, List<String>> quero = new HashMap<>();
                         for (String album : catalogown.keySet()){
                             if(catalogrec.containsKey(album)){
                                 for(String photo : catalogrec.get(album)){
                                     if(!catalogown.get(album).contains(photo)){
                                         if(quero.containsKey(album)){
-                                           try{
-                                               Log.d("FODASSE",quero.toString());
                                                quero.get(album).add(photo);
-                                           }catch (Exception e){
-                                               e.printStackTrace();
-                                           }
                                         } else {
                                             List<String> asd = new ArrayList<>();
                                             asd.add(photo);
@@ -295,6 +305,43 @@ public class MsgSenderActivity extends Service implements
                                     FileOutputStream fos = new FileOutputStream(fotoPath);
                                     fos.write(mapa.get(fotoName));
                                     fos.close();
+
+                                    File file = new File(catalogPath);
+                                    Log.d("FODASSE", catalogPath + " was created");
+                                    if(!file.exists()){
+                                        try{
+                                            file.createNewFile();
+                                            Log.d("FODASSE", fotoPath + "catalog was created");
+                                        }catch (Exception e){
+                                            e.printStackTrace();
+                                        }
+                                    } else {
+                                        Log.d("FODASSE", fotoPath + "catalog already exists");
+                                    }
+
+                                    String jsonCatalog = readFile(catalogPath);
+
+                                    Map<String, List<String>> events;
+                                    Log.d("FODASSE","IN CATALOG FILE: " + jsonCatalog);
+                                    if(!jsonCatalog.equals("")){
+                                        Log.d("FODASSE","FILE NOT EMPY");
+                                        events = new Gson().fromJson(jsonCatalog, new TypeToken<Map<String, ArrayList<String>>>(){}.getType());
+                                    } else {
+                                        Log.d("FODASSE","FILE EMPTY");
+                                        events = new HashMap<>();
+                                    }
+                                    if(events.containsKey(album)){
+                                        events.get(album).add(fotoName);
+                                    } else {
+                                        events.put(album,Arrays.asList(fotoName));
+                                    }
+                                    File fnew=new File(catalogPath);
+                                    fnew.createNewFile();
+                                    FileWriter fw = new FileWriter(catalogPath);
+                                    Gson gson = new GsonBuilder().create();
+                                    Log.d("FODASSE",gson.toJson(events));
+                                    fw.write(gson.toJson(events));
+                                    fw.close();
                                 }
                             }
                         }
