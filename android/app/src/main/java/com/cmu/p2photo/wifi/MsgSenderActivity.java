@@ -261,9 +261,16 @@ public class MsgSenderActivity extends Service implements
                                 for(String photo : catalogrec.get(album)){
                                     if(!catalogown.get(album).contains(photo)){
                                         if(quero.containsKey(album)){
-                                            quero.get(album).add(photo);
+                                           try{
+                                               Log.d("FODASSE",quero.toString());
+                                               quero.get(album).add(photo);
+                                           }catch (Exception e){
+                                               e.printStackTrace();
+                                           }
                                         } else {
-                                            quero.put(album, Arrays.asList(photo));
+                                            List<String> asd = new ArrayList<>();
+                                            asd.add(photo);
+                                            quero.put(album, asd);
                                         }
                                     }
                                 }
@@ -277,21 +284,23 @@ public class MsgSenderActivity extends Service implements
 
                         //TODO vai receber e guardar as fotos aqui
 
-                        Map<String,List<Pair<String,byte[]>>> fotosRecebidas = (HashMap<String,List<Pair<String,byte[]>>>)in.readObject();
-
+                        Map<String,List<Map<String,byte[]>>> fotosRecebidas = (HashMap<String,List<Map<String,byte[]>>>)in.readObject();
+                        Log.d("FOTOSDEBUG", "FOTOSRECEBIDASCRL " + fotosRecebidas.toString());
 
                         for(String album : fotosRecebidas.keySet()){
-                            for(Pair<String,byte[]> par : fotosRecebidas.get(album)){
-                                String fotoPath = getApplicationContext().getFilesDir().getPath() + "/wifi/" + username + "/" + album + "/" + par.first;
-                                FileOutputStream fos = new FileOutputStream(fotoPath);
-                                fos.write(par.second);
-                                fos.close();
+                            for(Map<String,byte[]> mapa : fotosRecebidas.get(album)){
+                                for(String fotoName : mapa.keySet()){
+                                    String fotoPath = getApplicationContext().getFilesDir().getPath() + "/wifi/" + username + "/" + album + "/" + fotoName;
+                                    Log.d("FOTOSDEBUG","VAI ESCREVER FOTO!!! " + fotoPath);
+                                    FileOutputStream fos = new FileOutputStream(fotoPath);
+                                    fos.write(mapa.get(fotoName));
+                                    fos.close();
+                                }
                             }
                         }
 
 
-                        Log.d("FOTOSDEBUG", fotosRecebidas.toString());
-                        out.writeObject("kk"); // TODO MANUEL isto é para que?
+                        out.writeObject("kk");
                         out.flush();
                         /*final String sp1 = Config.getConfigValue(getApplicationContext(), "shared_preferences");
                         SharedPreferences prefs1 = getSharedPreferences(sp1, MODE_PRIVATE);
@@ -411,17 +420,26 @@ public class MsgSenderActivity extends Service implements
                     //TODO vai enviar as fotos
 
 
-                    Map<String,List<Pair<String,byte[]>>> mapdefotos = new HashMap<>();
+                    Map<String,List<Map<String,byte[]>>> mapdefotos = new HashMap<>();
                     for(String album : userquer.keySet()){
                         String albumpath = getApplicationContext().getFilesDir().getPath() + "/wifi/" + username + "/" + album + "/";
+                        Log.d("FOTOSDEBUG","albumpath " + albumpath);
                         for(String photoName : userquer.get(album)){
                             String fotopath = albumpath + photoName;
                             File asd = new File(fotopath);
                             if(asd.exists()){
+                                Map<String,byte[]> itemToAdd = new HashMap<>();
+                                itemToAdd.put(photoName,readFileBytes(fotopath));
                                 if(mapdefotos.containsKey(album)){
-                                    mapdefotos.get(album).add(new Pair<>(album,readFileBytes(fotopath)));
+                                   try{
+                                       mapdefotos.get(album).add(itemToAdd);
+                                   }catch (Exception e){
+                                       e.printStackTrace();
+                                   }
                                 } else {
-                                    mapdefotos.put(album,Arrays.asList(new Pair<>(album,readFileBytes(fotopath))));
+                                    List<Map<String,byte[]>> itemToAdd2 = new ArrayList<>();
+                                    itemToAdd2.add(itemToAdd);
+                                    mapdefotos.put(album,itemToAdd2);
                                 }
                             }
                         }
