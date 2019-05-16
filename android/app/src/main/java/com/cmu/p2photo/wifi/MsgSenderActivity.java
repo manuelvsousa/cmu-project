@@ -1,9 +1,27 @@
 package com.cmu.p2photo.wifi;
 
 import java.io.BufferedReader;
+import com.cmu.p2photo.R;
+import com.cmu.p2photo.cloud.util.Config;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
 import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
@@ -19,6 +37,7 @@ import pt.inesc.termite.wifidirect.SimWifiP2pManager.PeerListListener;
 import pt.inesc.termite.wifidirect.SimWifiP2pManager.GroupInfoListener;
 
 import android.app.AlertDialog;
+import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -26,20 +45,21 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Messenger;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.cmu.p2photo.R;
-
-public class MsgSenderActivity extends AppCompatActivity implements
+public class MsgSenderActivity extends Service implements
         PeerListListener, GroupInfoListener {
 
     public static final String TAG = "msgsender";
@@ -49,20 +69,31 @@ public class MsgSenderActivity extends AppCompatActivity implements
     private Messenger mService = null;
     private boolean mBound = false;
     private SimWifiP2pSocketServer mSrvSocket = null;
-    private SimWifiP2pSocket mCliSocket = null;
-    private TextView mTextInput;
-    private TextView mTextOutput;
+    private SimWifiP2pSocket mCliSocket;
     private SimWifiP2pBroadcastReceiver mReceiver;
+    String fim="";
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onCreate() {
+        final String sp = Config.getConfigValue(getApplicationContext(), "shared_preferences");
+        SharedPreferences prefs = getSharedPreferences(sp, MODE_PRIVATE);
+        String username = prefs.getString("username", null);
+        final String catalogPath = getApplicationContext().getFilesDir().getPath() + "/wifi/" + username + "/catalog";
+        File file = new File(catalogPath);
+        Log.d("FODASSE", catalogPath + " was created");
+        if(!file.exists()){
+            try{
+                file.getParentFile().mkdirs();
+                Log.d("FODASSE", catalogPath + "catalog was created");
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        } else {
+            Log.d("FODASSE", catalogPath + "catalog already exists");
+        }
 
-        // initialize the UI
-        setContentView(R.layout.activity_wifi);
-        guiSetButtonListeners();
-        guiUpdateInitState();
 
+        Log.d("ENTROU","ENTROUENTROU");
         // initialize the WDSim API
         SimWifiP2pSocketManager.Init(getApplicationContext());
 
@@ -74,101 +105,63 @@ public class MsgSenderActivity extends AppCompatActivity implements
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_GROUP_OWNERSHIP_CHANGED_ACTION);
         mReceiver = new SimWifiP2pBroadcastReceiver(this);
         registerReceiver(mReceiver, filter);
+
+        Intent intent = new Intent(getBaseContext(), SimWifiP2pService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+
+        mBound = true;
+
+        // spawn the chat server background task
+        new IncommingCommTask().executeOnExecutor(
+                AsyncTask.THREAD_POOL_EXECUTOR);
+
+
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        unregisterReceiver(mReceiver);
+    public void onDestroy() {
+        Toast.makeText(this, "Service stopped", Toast.LENGTH_LONG).show();
     }
 
-    /*
-     * Listeners associated to buttons
-     */
+    @Override
+    public void onStart(Intent intent, int startid) {
+        Toast.makeText(this, "Service started by user.", Toast.LENGTH_LONG).show();
+    }
 
-    private OnClickListener listenerWifiOnButton = new OnClickListener() {
-        public void onClick(View v){
+    public void fazertrocas(SimWifiP2pDeviceList peers,SimWifiP2pInfo groupInfo){
+        Log.d("DISPOSITIVO","NUMERO DE DISPOSITIVOS "+peers.getDeviceList().size());
+        for (String deviceName : groupInfo.getDevicesInNetwork()) {
+            SimWifiP2pDevice device = peers.getByName(deviceName);
+            Log.d("Dispotisivo","Esta a ir para um Dispositivo");
 
-            Intent intent = new Intent(v.getContext(), SimWifiP2pService.class);
-            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-            mBound = true;
-
-            // spawn the chat server background task
-            new IncommingCommTask().executeOnExecutor(
-                    AsyncTask.THREAD_POOL_EXECUTOR);
-
-            guiUpdateDisconnectedState();
-        }
-    };
-
-    private OnClickListener listenerWifiOffButton = new OnClickListener() {
-        public void onClick(View v){
-            if (mBound) {
-                unbindService(mConnection);
-                mBound = false;
-                guiUpdateInitState();
-            }
-        }
-    };
-
-    private OnClickListener listenerInRangeButton = new OnClickListener() {
-        public void onClick(View v){
-            if (mBound) {
-                mManager.requestPeers(mChannel, MsgSenderActivity.this);
-            } else {
-                Toast.makeText(v.getContext(), "Service not bound",
-                        Toast.LENGTH_SHORT).show();
-            }
-        }
-    };
-
-    private OnClickListener listenerInGroupButton = new OnClickListener() {
-        public void onClick(View v){
-            if (mBound) {
-                mManager.requestGroupInfo(mChannel, MsgSenderActivity.this);
-            } else {
-                Toast.makeText(v.getContext(), "Service not bound",
-                        Toast.LENGTH_SHORT).show();
-            }
-        }
-    };
-
-    private OnClickListener listenerConnectButton = new OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            findViewById(R.id.idConnectButton).setEnabled(false);
             new OutgoingCommTask().executeOnExecutor(
                     AsyncTask.THREAD_POOL_EXECUTOR,
-                    mTextInput.getText().toString());
-        }
-    };
+                    device.getVirtIp());
+            Log.d("Dispotisivo","SendCommTask");
+            Log.d("dispositivo",device.getVirtIp().split(":")[0]);
+            Log.d("dispositivo",device.getRealIp());
+            Log.d("dispositivo",device.getVirtIp());
+            Log.d("dispositivo",device.deviceName);
 
-    private OnClickListener listenerSendButton = new OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            findViewById(R.id.idSendButton).setEnabled(false);
+
 
             new SendCommTask().executeOnExecutor(
                     AsyncTask.THREAD_POOL_EXECUTOR,
-                    mTextInput.getText().toString());
-        }
-    };
+                    device.getVirtIp());
 
-    private OnClickListener listenerDisconnectButton = new OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            findViewById(R.id.idDisconnectButton).setEnabled(false);
-            if (mCliSocket != null) {
+            //DISCONECT AFTER SENDING
+            /*if (mCliSocket != null) {
                 try {
                     mCliSocket.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }
-            mCliSocket = null;
-            guiUpdateDisconnectedState();
+            }*/
+
+            //mCliSocket = null;
         }
-    };
+    }
+
 
     private ServiceConnection mConnection = new ServiceConnection() {
         // callbacks for service binding, passed to bindService()
@@ -190,6 +183,15 @@ public class MsgSenderActivity extends AppCompatActivity implements
         }
     };
 
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+
+
+
+
 
     /*
      * Asynctasks implementing message exchange
@@ -197,28 +199,114 @@ public class MsgSenderActivity extends AppCompatActivity implements
 
     public class IncommingCommTask extends AsyncTask<Void, String, Void> {
 
+
+        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
         @Override
         protected Void doInBackground(Void... params) {
 
-            Log.d(TAG, "IncommingCommTask started (" + this.hashCode() + ").");
+            Log.d("aTestar", "IncommingCommTask started (" + this.hashCode() + ").");
 
             try {
                 mSrvSocket = new SimWifiP2pSocketServer(
                         Integer.parseInt(getString(R.string.port)));
             } catch (IOException e) {
+                Log.d("aTestar", "IncommingCommTask started (" + this.hashCode() + ").");
                 e.printStackTrace();
             }
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     SimWifiP2pSocket sock = mSrvSocket.accept();
                     try {
-                        BufferedReader sockIn = new BufferedReader(
+                        /*BufferedReader sockIn = new BufferedReader(
                                 new InputStreamReader(sock.getInputStream()));
                         String st = sockIn.readLine();
                         publishProgress(st);
-                        sock.getOutputStream().write(("\n").getBytes());
+                        //simular enviar o seu username*/
+
+                        ObjectInputStream in = new ObjectInputStream(sock.getInputStream());
+                        ObjectOutputStream out = new ObjectOutputStream(sock.getOutputStream());
+                        String receiveCatalog=(String)in.readObject();
+
+
+                        Map<String, List<String>> catalogrec;
+                        Log.d("FODASSE","IN CATALOG FILE: " + receiveCatalog);
+                        if(!receiveCatalog.equals("")){
+                            Log.d("FODASSE","FILE NOT EMPY");
+                            catalogrec = new Gson().fromJson(receiveCatalog, new TypeToken<Map<String, ArrayList<String>>>(){}.getType());
+                        } else {
+                            Log.d("FODASSE","FILE EMPTY");
+                            catalogrec = new HashMap<>();
+                        }
+                        Log.d("FODASSE","CATALOG RECEBIDO " + catalogrec.toString());
+                        final String sp = Config.getConfigValue(getApplicationContext(), "shared_preferences");
+                        SharedPreferences prefs = getSharedPreferences(sp, MODE_PRIVATE);
+                        String username = prefs.getString("username", null);
+                        final String catalogPath = getApplicationContext().getFilesDir().getPath() + "/wifi/" + username + "/catalog";
+
+                        String json = readFile(catalogPath);
+
+                        Map<String, List<String>> catalogown;
+                        Log.d("FODASSE","IN CATALOG FILE1: " + json);
+                        if(!json.equals("")){
+                            Log.d("FODASSE","FILE NOT EMPY1");
+                            catalogown = new Gson().fromJson(json, new TypeToken<Map<String, ArrayList<String>>>(){}.getType());
+                        } else {
+                            Log.d("FODASSE","FILE EMPTY1");
+                            catalogown = new HashMap<>();
+                        }
+
+                        Map<String, List<String>> quero = new HashMap<>();
+                        for (String album : catalogown.keySet()){
+                            if(catalogrec.containsKey(album)){
+                                for(String photo : catalogrec.get(album)){
+                                    if(!catalogown.get(album).contains(photo)){
+                                        if(quero.containsKey(album)){
+                                            quero.get(album).add(photo);
+                                        } else {
+                                            quero.put(album, Arrays.asList(photo));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        Log.d("FODASSE","QUERO FOTOS " + quero.toString());
+
+                        out.writeObject(quero);
+                        out.flush();
+
+
+                        //TODO vai receber e guardar as fotos aqui
+
+                        Map<String,List<Pair<String,byte[]>>> fotosRecebidas = (HashMap<String,List<Pair<String,byte[]>>>)in.readObject();
+
+
+                        for(String album : fotosRecebidas.keySet()){
+                            for(Pair<String,byte[]> par : fotosRecebidas.get(album)){
+                                String fotoPath = getApplicationContext().getFilesDir().getPath() + "/wifi/" + username + "/" + album + "/" + par.first;
+                                FileOutputStream fos = new FileOutputStream(fotoPath);
+                                fos.write(par.second);
+                                fos.close();
+                            }
+                        }
+
+
+                        Log.d("FOTOSDEBUG", fotosRecebidas.toString());
+                        out.writeObject("kk"); // TODO MANUEL isto é para que?
+                        out.flush();
+                        /*final String sp1 = Config.getConfigValue(getApplicationContext(), "shared_preferences");
+                        SharedPreferences prefs1 = getSharedPreferences(sp1, MODE_PRIVATE);
+                        String usernameMeu = prefs1.getString("username", null);
+                        out.writeObject(usernameMeu);
+                        Log.d("Testes",username);
+                        out.flush();*/
+                        Log.d("teste","11");
+
+
+
                     } catch (IOException e) {
                         Log.d("Error reading socket:", e.getMessage());
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
                     } finally {
                         sock.close();
                     }
@@ -231,24 +319,27 @@ public class MsgSenderActivity extends AppCompatActivity implements
             return null;
         }
 
-        @Override
-        protected void onProgressUpdate(String... values) {
-            mTextOutput.append(values[0] + "\n");
-        }
+
     }
 
     public class OutgoingCommTask extends AsyncTask<String, Void, String> {
 
         @Override
-        protected void onPreExecute() {
-            mTextOutput.setText("Connecting...");
+        protected void onPreExecute(){
+            Log.d("aTestar","PreOUTGOING");
         }
 
         @Override
         protected String doInBackground(String... params) {
+            Log.d("aTestar","BACKGROUNDOUTGOING");
             try {
-                mCliSocket = new SimWifiP2pSocket(params[0],
-                        Integer.parseInt(getString(R.string.port)));
+                Log.d("Testes","FUNCIONOU McliSOCKET");
+                mCliSocket = new SimWifiP2pSocket(params[0],Integer.parseInt(getString(R.string.port)));
+
+                new SendCommTask().executeOnExecutor(
+                        AsyncTask.THREAD_POOL_EXECUTOR,
+                        params[0]);
+                Log.d("testes","ubububububbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
             } catch (UnknownHostException e) {
                 return "Unknown Host:" + e.getMessage();
             } catch (IOException e) {
@@ -260,31 +351,98 @@ public class MsgSenderActivity extends AppCompatActivity implements
         @Override
         protected void onPostExecute(String result) {
             if (result != null) {
-                guiUpdateDisconnectedState();
-                mTextOutput.setText(result);
+
             } else {
-                findViewById(R.id.idDisconnectButton).setEnabled(true);
-                findViewById(R.id.idConnectButton).setEnabled(false);
-                findViewById(R.id.idSendButton).setEnabled(true);
-                mTextInput.setHint("");
-                mTextInput.setText("");
-                mTextOutput.setText("");
+
             }
         }
+    }
+
+    private byte[] readFileBytes(String path) {
+        byte[] getBytes = {};
+        try {
+            File file = new File(path);
+            getBytes = new byte[(int) file.length()];
+            InputStream is = new FileInputStream(file);
+            is.read(getBytes);
+            is.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return getBytes;
     }
 
     public class SendCommTask extends AsyncTask<String, String, Void> {
 
         @Override
         protected Void doInBackground(String... msg) {
-            try {
-                mCliSocket.getOutputStream().write((msg[0] + "\n").getBytes());
-                BufferedReader sockIn = new BufferedReader(
-                        new InputStreamReader(mCliSocket.getInputStream()));
-                sockIn.readLine();
-                mCliSocket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+            if(mCliSocket != null) {
+
+
+                try {
+                    Log.d("enviar", "1");
+                    //mCliSocket.getOutputStream().write(("   iuj"+"\n").getBytes());
+                    Log.d("enviar", "2");
+                    ObjectOutputStream out = new ObjectOutputStream(mCliSocket.getOutputStream());
+                    Log.d("enviar", "3");
+                    ObjectInputStream in = new ObjectInputStream(mCliSocket.getInputStream());
+                    //USERNAME
+                    final String sp = Config.getConfigValue(getApplicationContext(), "shared_preferences");
+                    SharedPreferences prefs = getSharedPreferences(sp, MODE_PRIVATE);
+                    String username = prefs.getString("username", null);
+
+
+                    //enviar catalogo
+
+                    final String catalogPath = getApplicationContext().getFilesDir().getPath() + "/wifi/" + username + "/catalog";
+
+                    String json = readFile(catalogPath);
+
+                    //enviar catalogo
+                    out.writeObject(json);
+                    out.flush();
+                    //Buscar Map de fotos pretendidas
+                    Map<String,List<String>> userquer = (HashMap<String, List<String>>) in.readObject();
+                    Log.d("Userquer",userquer.toString());
+                    String a="Testar "+username;
+                    //Enviar Bytes
+                    //TODO vai enviar as fotos
+
+
+                    Map<String,List<Pair<String,byte[]>>> mapdefotos = new HashMap<>();
+                    for(String album : userquer.keySet()){
+                        String albumpath = getApplicationContext().getFilesDir().getPath() + "/wifi/" + username + "/" + album + "/";
+                        for(String photoName : userquer.get(album)){
+                            String fotopath = albumpath + photoName;
+                            File asd = new File(fotopath);
+                            if(asd.exists()){
+                                if(mapdefotos.containsKey(album)){
+                                    mapdefotos.get(album).add(new Pair<>(album,readFileBytes(fotopath)));
+                                } else {
+                                    mapdefotos.put(album,Arrays.asList(new Pair<>(album,readFileBytes(fotopath))));
+                                }
+                            }
+                        }
+                    }
+
+                    Log.d("FOTOSDEBUG","FOTOS A ENVIAR " + mapdefotos.toString());
+
+
+
+                    out.writeObject(mapdefotos);
+                    out.flush();
+                    in.readObject();
+                    mCliSocket.close();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+
             }
             mCliSocket = null;
             return null;
@@ -292,8 +450,7 @@ public class MsgSenderActivity extends AppCompatActivity implements
 
         @Override
         protected void onPostExecute(Void result) {
-            mTextInput.setText("");
-            guiUpdateDisconnectedState();
+
         }
     }
 
@@ -301,98 +458,55 @@ public class MsgSenderActivity extends AppCompatActivity implements
      * Listeners associated to Termite
      */
 
+    public void PeerinRange(){
+        if(mBound) {
+            mManager.requestGroupInfo(mChannel, MsgSenderActivity.this);
+        }
+    }
+
+
+    private String readFile(String fileName) throws IOException {
+        BufferedReader br = new BufferedReader(new FileReader(fileName));
+        try {
+            StringBuilder sb = new StringBuilder();
+            String line = br.readLine();
+
+            while (line != null) {
+                sb.append(line);
+                sb.append("\n");
+                line = br.readLine();
+            }
+            return sb.toString();
+        } finally {
+            br.close();
+        }
+    }
     @Override
     public void onPeersAvailable(SimWifiP2pDeviceList peers) {
-        StringBuilder peersStr = new StringBuilder();
-
         // compile list of devices in range
-        for (SimWifiP2pDevice device : peers.getDeviceList()) {
-            String devstr = "" + device.deviceName + " (" + device.getVirtIp() + ")\n";
-            peersStr.append(devstr);
-        }
-
-        // display list of devices in range
-        new AlertDialog.Builder(this)
-                .setTitle("Devices in WiFi Range")
-                .setMessage(peersStr.toString())
-                .setNeutralButton("Dismiss", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                })
-                .show();
+        //fazertrocas(peers);
     }
 
     @Override
     public void onGroupInfoAvailable(SimWifiP2pDeviceList devices,
                                      SimWifiP2pInfo groupInfo) {
-
         // compile list of network members
         StringBuilder peersStr = new StringBuilder();
         for (String deviceName : groupInfo.getDevicesInNetwork()) {
             SimWifiP2pDevice device = devices.getByName(deviceName);
+            Log.d("Devic",device.getVirtIp());
+            new OutgoingCommTask().executeOnExecutor(
+                    AsyncTask.THREAD_POOL_EXECUTOR,
+                    device.getVirtIp());
+
+
+
+
             String devstr = "" + deviceName + " (" +
                     ((device == null)?"??":device.getVirtIp()) + ")\n";
             peersStr.append(devstr);
         }
-
-        // display list of network members
-        new AlertDialog.Builder(this)
-                .setTitle("Devices in WiFi Network")
-                .setMessage(peersStr.toString())
-                .setNeutralButton("Dismiss", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                })
-                .show();
     }
 
-    /*
-     * Helper methods for updating the interface
-     */
 
-    private void guiSetButtonListeners() {
-
-        findViewById(R.id.idConnectButton).setOnClickListener(listenerConnectButton);
-        findViewById(R.id.idDisconnectButton).setOnClickListener(listenerDisconnectButton);
-        findViewById(R.id.idSendButton).setOnClickListener(listenerSendButton);
-        findViewById(R.id.idWifiOnButton).setOnClickListener(listenerWifiOnButton);
-        findViewById(R.id.idWifiOffButton).setOnClickListener(listenerWifiOffButton);
-        findViewById(R.id.idInRangeButton).setOnClickListener(listenerInRangeButton);
-        findViewById(R.id.idInGroupButton).setOnClickListener(listenerInGroupButton);
-    }
-
-    private void guiUpdateInitState() {
-
-        mTextInput = (TextView) findViewById(R.id.editText1);
-        mTextInput.setHint("type remote virtual IP (192.168.0.0/16)");
-        mTextInput.setEnabled(false);
-
-        mTextOutput = (TextView) findViewById(R.id.editText2);
-        mTextOutput.setEnabled(false);
-        mTextOutput.setText("");
-
-        findViewById(R.id.idConnectButton).setEnabled(false);
-        findViewById(R.id.idDisconnectButton).setEnabled(false);
-        findViewById(R.id.idSendButton).setEnabled(false);
-        findViewById(R.id.idWifiOnButton).setEnabled(true);
-        findViewById(R.id.idWifiOffButton).setEnabled(false);
-        findViewById(R.id.idInRangeButton).setEnabled(false);
-        findViewById(R.id.idInGroupButton).setEnabled(false);
-    }
-
-    private void guiUpdateDisconnectedState() {
-
-        mTextInput.setEnabled(true);
-        mTextInput.setHint("type remote virtual IP (192.168.0.0/16)");
-        mTextOutput.setEnabled(true);
-        mTextOutput.setText("");
-
-        findViewById(R.id.idSendButton).setEnabled(false);
-        findViewById(R.id.idConnectButton).setEnabled(true);
-        findViewById(R.id.idDisconnectButton).setEnabled(false);
-        findViewById(R.id.idWifiOnButton).setEnabled(false);
-        findViewById(R.id.idWifiOffButton).setEnabled(true);
-        findViewById(R.id.idInRangeButton).setEnabled(true);
-        findViewById(R.id.idInGroupButton).setEnabled(true);
-    }
 }

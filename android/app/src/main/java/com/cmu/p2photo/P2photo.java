@@ -21,6 +21,7 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,6 +52,12 @@ public class P2photo extends AppCompatActivity {
 
             DropboxClientFactory.init(accessToken);
             PicassoClient.init(getApplicationContext(), DropboxClientFactory.getClient());
+        }else{
+            Log.d("cenas","cenas0");
+            Intent serviceIntent = new Intent(this, MsgSenderActivity.class);
+            this.startService(serviceIntent);
+            Log.d("cenas2","cenas2");
+
         }
 
 

@@ -53,7 +53,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
+        <service android:name="com.cmu.p2photo.wifi.MsgSenderActivity" />
         <service android:name="pt.inesc.termite.wifidirect.service.SimWifiP2pService" />
 
     </application>

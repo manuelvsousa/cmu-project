@@ -31,9 +31,9 @@
         android:id="@+id/addUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="58dp"
-        android:layout_marginRight="58dp"
-        android:layout_marginBottom="82dp"
+        android:layout_marginEnd="71dp"
+        android:layout_marginRight="71dp"
+        android:layout_marginBottom="126dp"
         android:text="Create"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -41,27 +41,28 @@
 
     <TextView
         android:id="@+id/textView13"
-        android:layout_width="105dp"
-        android:layout_height="35dp"
-        android:layout_marginStart="43dp"
-        android:layout_marginLeft="43dp"
-        android:layout_marginBottom="10dp"
+        android:layout_width="95dp"
+        android:layout_height="25dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginLeft="2dp"
+        android:layout_marginBottom="9dp"
         android:text="Album Name"
         app:layout_constraintBottom_toTopOf="@+id/userName"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/userName"
         app:layout_constraintTop_toBottomOf="@+id/textView8" />
 
     <EditText
         android:id="@+id/userName"
         android:layout_width="290dp"
         android:layout_height="0dp"
-        android:layout_marginTop="304dp"
-        android:layout_marginBottom="250dp"
+        android:layout_marginStart="41dp"
+        android:layout_marginLeft="41dp"
+        android:layout_marginBottom="219dp"
         android:ems="10"
         android:inputType="textPersonName"
         android:text="album"
         app:layout_constraintBottom_toTopOf="@+id/addUser"
-        app:layout_constraintStart_toStartOf="@+id/textView13"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView13" />
 
 </android.support.constraint.ConstraintLayout>

@@ -494,7 +494,19 @@ public class ViewAlbum extends AppCompatActivity {
                         Log.d("FODASSE","copyFileUsingStream done");
 
                         final String catalogPath = getApplicationContext().getFilesDir().getPath() + "/wifi/" + username + "/catalog";
-                        Log.d("FODASSE",catalogPath);
+
+                        File file = new File(catalogPath);
+                        Log.d("FODASSE", catalogPath + " was created");
+                        if(!file.exists()){
+                            try{
+                                file.createNewFile();
+                                Log.d("FODASSE", photoPath + "catalog was created");
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+                        } else {
+                            Log.d("FODASSE", photoPath + "catalog already exists");
+                        }
 
                         String json = readFile(catalogPath);
 
