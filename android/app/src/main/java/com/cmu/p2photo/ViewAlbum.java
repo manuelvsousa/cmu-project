@@ -178,7 +178,27 @@ public class ViewAlbum extends AppCompatActivity {
                 if(!file.exists()){
                     try{
                         file.createNewFile();
-                        Log.d("FODASSE", photoPath + "catalog was created");
+                        String json = readFile(catalogPath);
+                        Map<String, List<String>> events;
+                        Log.d("FODASSE","IN CATALOG FILE: " + json);
+                        if(!json.equals("")){
+                            Log.d("FODASSE","FILE NOT EMPY");
+                            events = new Gson().fromJson(json, new TypeToken<Map<String, ArrayList<String>>>(){}.getType());
+                        } else {
+                            Log.d("FODASSE","FILE EMPTY");
+                            events = new HashMap<>();
+                        }
+                        if(!events.containsKey(album)){
+                            List<String> empty = new ArrayList<>();
+                            events.put(album,empty);
+                        }
+                        File fnew=new File(catalogPath);
+                        fnew.createNewFile();
+                        FileWriter fw = new FileWriter(catalogPath);
+                        Gson gson = new GsonBuilder().create();
+                        Log.d("FODASSE",gson.toJson(events));
+                        fw.write(gson.toJson(events));
+                        fw.close();
                     }catch (Exception e){
                         e.printStackTrace();
                     }

@@ -91,7 +91,7 @@ public class MsgSenderActivity extends Service implements
                 e.printStackTrace();
             }
         } else {
-            Log.d("FODASSE", catalogPath + "catalog already exists");
+            Log.d("FODASSE", catalogPath + " already exists");
         }
 
 
@@ -270,6 +270,7 @@ public class MsgSenderActivity extends Service implements
                         }
 
                         Log.d("FODASSE","OWN RECEBIDO " + catalogown.toString());
+                        Log.d("FODASSE","ESTRANGEIRO RECEBIDO " + catalogrec.toString());
 
                         Map<String, List<String>> quero = new HashMap<>();
                         for (String album : catalogown.keySet()){
@@ -312,7 +313,27 @@ public class MsgSenderActivity extends Service implements
                                     if(!file.exists()){
                                         try{
                                             file.createNewFile();
-                                            Log.d("FODASSE", fotoPath + "catalog was created");
+                                            String json2 = readFile(catalogPath);
+                                            Map<String, List<String>> events;
+                                            Log.d("FODASSE","IN CATALOG FILE: " + json);
+                                            if(!json.equals("")){
+                                                Log.d("FODASSE","FILE NOT EMPY");
+                                                events = new Gson().fromJson(json2, new TypeToken<Map<String, ArrayList<String>>>(){}.getType());
+                                            } else {
+                                                Log.d("FODASSE","FILE EMPTY");
+                                                events = new HashMap<>();
+                                            }
+                                            if(!events.containsKey(album)){
+                                                List<String> empty = new ArrayList<>();
+                                                events.put(album,empty);
+                                            }
+                                            File fnew=new File(catalogPath);
+                                            fnew.createNewFile();
+                                            FileWriter fw = new FileWriter(catalogPath);
+                                            Gson gson = new GsonBuilder().create();
+                                            Log.d("FODASSE",gson.toJson(events));
+                                            fw.write(gson.toJson(events));
+                                            fw.close();
                                         }catch (Exception e){
                                             e.printStackTrace();
                                         }
