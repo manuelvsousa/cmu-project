@@ -30,15 +30,16 @@ public class AddUser extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_user);
+        setTitle("Add Username to Album");
         final String apiUrl = Config.getConfigValue(this, "api_url");
         final String sp = Config.getConfigValue(this, "shared_preferences");
-        Button btnFind = findViewById(R.id.addUser);
+        Button btnFind = findViewById(R.id.buttonAddUsername);
         final String album = getIntent().getStringExtra("album");
         btnFind.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                EditText user = findViewById(R.id.userName);
+                EditText user = findViewById(R.id.editText2AlbumName);
 
                 try {
                     JSONObject jsonParams = new JSONObject();

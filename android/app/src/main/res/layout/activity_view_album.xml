@@ -6,75 +6,79 @@
     android:layout_height="match_parent"
     tools:context=".ViewAlbum">
 
+
     <TextView
-        android:id="@+id/albumTextView"
+        android:id="@+id/viewViewAlbum"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_above="@+id/btnSign_main"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="12dp"
-        android:layout_marginLeft="12dp"
-        android:layout_marginTop="121dp"
-        android:layout_marginEnd="12dp"
-        android:layout_marginRight="12dp"
-        android:layout_marginBottom="47dp"
+        android:layout_marginStart="26dp"
+        android:layout_marginLeft="26dp"
+        android:layout_marginTop="184dp"
+        android:layout_marginEnd="26dp"
+        android:layout_marginRight="26dp"
+        android:layout_marginBottom="12dp"
         android:password="false"
-        android:text="P2photo"
+        android:text="Album xxxx"
         android:textColor="@color/colorPrimary"
         android:textIsSelectable="false"
         android:textSize="36sp"
         app:fontFamily="casual"
-        app:layout_constraintBottom_toTopOf="@+id/addUser"
+        app:layout_constraintBottom_toTopOf="@+id/buttonAddUser"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/showUsers"
-        android:layout_width="120dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="6dp"
-        android:text="Album Users"
-        app:layout_constraintBottom_toTopOf="@+id/addPhoto"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addUser" />
-
-    <Button
-        android:id="@+id/addPhoto"
+        android:id="@+id/buttonAddUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginBottom="11dp"
-        android:text="Add Photo"
-        app:layout_constraintBottom_toTopOf="@+id/viewPhotos"
-        app:layout_constraintStart_toStartOf="@+id/showUsers"
-        app:layout_constraintTop_toBottomOf="@+id/showUsers" />
-
-    <Button
-        android:id="@+id/addUser"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginBottom="13dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginBottom="9dp"
         android:text="Add User"
-        app:layout_constraintBottom_toTopOf="@+id/showUsers"
-        app:layout_constraintStart_toStartOf="@+id/showUsers"
-        app:layout_constraintTop_toBottomOf="@+id/albumTextView" />
-
+        app:layout_constraintBottom_toTopOf="@+id/button3AlbumUsers"
+        app:layout_constraintStart_toStartOf="@+id/button3AlbumUsers"
+        app:layout_constraintTop_toBottomOf="@+id/viewViewAlbum" />
 
     <Button
-        android:id="@+id/viewPhotos"
+        android:id="@+id/button2ViewPhotos"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="283dp"
+        android:layout_marginBottom="244dp"
         android:text="View Photos"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/showUsers"
-        app:layout_constraintTop_toBottomOf="@+id/addPhoto" />
+        app:layout_constraintStart_toStartOf="@+id/button3AlbumUsers"
+        app:layout_constraintTop_toBottomOf="@+id/button4AddPhoto" />
+
+    <Button
+        android:id="@+id/button4AddPhoto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginBottom="10dp"
+        android:text="Add Photo"
+        app:layout_constraintBottom_toTopOf="@+id/button2ViewPhotos"
+        app:layout_constraintStart_toStartOf="@+id/button2ViewPhotos"
+        app:layout_constraintTop_toBottomOf="@+id/button3AlbumUsers" />
+
+    <Button
+        android:id="@+id/button3AlbumUsers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="134dp"
+        android:layout_marginLeft="134dp"
+        android:layout_marginEnd="134dp"
+        android:layout_marginRight="134dp"
+        android:layout_marginBottom="11dp"
+        android:text="Album Users"
+        app:layout_constraintBottom_toTopOf="@+id/button4AddPhoto"
+        app:layout_constraintEnd_toEndOf="@+id/viewViewAlbum"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonAddUser" />
 
 </android.support.constraint.ConstraintLayout>

@@ -27,7 +27,6 @@ import com.cmu.p2photo.cloud.dropbox.CreateFileTask;
 import com.cmu.p2photo.cloud.dropbox.DropboxClientFactory;
 import com.cmu.p2photo.cloud.dropbox.UploadFileTask;
 import com.cmu.p2photo.cloud.util.Config;
-import com.cmu.p2photo.wifi.MsgSenderActivity;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -110,11 +109,11 @@ public class ViewAlbum extends AppCompatActivity {
         }
 
         final String album = getIntent().getStringExtra("album");
-        TextView tv = findViewById(R.id.albumTextView);
+        TextView tv = findViewById(R.id.viewViewAlbum);
         tv.setText("Album: " + album);
 
 
-        Button addPhotoButton = findViewById(R.id.addPhoto);
+        Button addPhotoButton = findViewById(R.id.button4AddPhoto);
         addPhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -128,7 +127,7 @@ public class ViewAlbum extends AppCompatActivity {
         });
 
 
-        Button showUsers = findViewById(R.id.showUsers);
+        Button showUsers = findViewById(R.id.button3AlbumUsers);
         showUsers.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -140,7 +139,7 @@ public class ViewAlbum extends AppCompatActivity {
             }
         });
 
-        Button addUser = findViewById(R.id.addUser);
+        Button addUser = findViewById(R.id.buttonAddUser);
         addUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -152,7 +151,7 @@ public class ViewAlbum extends AppCompatActivity {
             }
         });
 
-        Button viewPhotos = findViewById(R.id.viewPhotos);
+        Button viewPhotos = findViewById(R.id.button2ViewPhotos);
         viewPhotos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

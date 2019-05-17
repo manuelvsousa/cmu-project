@@ -34,12 +34,12 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="5dp"
-        android:layout_marginLeft="5dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginRight="4dp"
         android:layout_marginBottom="5dp"
         android:text="View Albums"
         app:layout_constraintBottom_toTopOf="@+id/showUsersAlbums"
-        app:layout_constraintStart_toStartOf="@+id/addUser"
+        app:layout_constraintEnd_toEndOf="@+id/addUser"
         app:layout_constraintTop_toBottomOf="@+id/addUser" />
 
     <Button
@@ -49,10 +49,12 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
+        android:layout_marginBottom="144dp"
         android:text="Logout"
-        app:layout_constraintBottom_toTopOf="@+id/wifiBT"
-        app:layout_constraintStart_toStartOf="@+id/wifiBT"
-        app:layout_constraintTop_toBottomOf="@+id/showUsersAlbums" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/logButton" />
 
     <Button
         android:id="@+id/addUser"
@@ -68,11 +70,11 @@
 
     <Button
         android:id="@+id/showUsersAlbums"
-        android:layout_width="215dp"
-        android:layout_height="45dp"
-        android:layout_marginBottom="55dp"
+        android:layout_width="223dp"
+        android:layout_height="46dp"
+        android:layout_marginBottom="11dp"
         android:text="Show Users Albums"
-        app:layout_constraintBottom_toTopOf="@+id/LogInButton"
+        app:layout_constraintBottom_toTopOf="@+id/logButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/viewAlbums" />
@@ -81,20 +83,12 @@
         android:id="@+id/logButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="11dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginLeft="1dp"
+        android:layout_marginBottom="10dp"
         android:text="Logs"
+        app:layout_constraintBottom_toTopOf="@+id/LogInButton"
         app:layout_constraintStart_toStartOf="@+id/LogInButton"
         app:layout_constraintTop_toBottomOf="@+id/showUsersAlbums" />
-
-    <Button
-        android:id="@+id/wifiBT"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="110dp"
-        android:text="WIFI"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/LogInButton" />
 
 </android.support.constraint.ConstraintLayout>

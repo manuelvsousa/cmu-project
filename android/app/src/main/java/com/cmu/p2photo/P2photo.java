@@ -64,20 +64,11 @@ public class P2photo extends AppCompatActivity {
         TextView tv = findViewById(R.id.textView8);
         if(wifiOn){
             tv.setText("Wifi Version");
+            setTitle("Wifi Version");
         } else {
             tv.setText("Cloud Version");
+            setTitle("Cloud Version");
         }
-
-        Button wifiButton = findViewById(R.id.wifiBT);
-        wifiButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//
-                Intent intent = new Intent(P2photo.this, MsgSenderActivity.class);
-                startActivity(intent);
-
-            }
-        });
 
         Button logButton = findViewById(R.id.logButton);
         logButton.setOnClickListener(new View.OnClickListener() {

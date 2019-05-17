@@ -17,12 +17,10 @@
         android:theme="@style/AppTheme"
         tools:replace="android:icon"
         android:usesCleartextTraffic="true">
-        <activity android:name=".AddUserToAlbum"></activity>
         <activity android:name=".ViewAlbum" />
         <activity android:name=".FindUser" />
         <activity android:name=".P2photo" />
         <activity android:name=".Sign_up" />
-        <activity android:name=".wifi.WifiDirect" />
         <activity android:name=".cloud.Dropbox" />
         <activity android:name=".CreateAlbum" />
         <activity android:name=".ListAlbums" />

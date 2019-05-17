@@ -122,6 +122,7 @@ public class MsgSenderActivity extends Service implements
                 while(true){
                     try {
                         Thread.sleep(30000);
+                        Log.d("FODASSE","WIFI UPDATE THREAD JUST RAN!");
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

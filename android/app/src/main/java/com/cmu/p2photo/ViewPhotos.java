@@ -49,7 +49,6 @@ public class ViewPhotos extends AppCompatActivity {
                 try {
                     gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                            Toast.makeText(ViewPhotos.this, "" + position, Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(ViewPhotos.this, ViewPhoto.class);
                             File folder = new File(photoPath);
                             File[] listOfFiles = folder.listFiles();
