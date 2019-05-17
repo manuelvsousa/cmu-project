@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.Toast;
 
 import com.cmu.p2photo.cloud.util.Config;
 import com.cmu.p2photo.cloud.util.ImageAdapter;
@@ -31,9 +30,9 @@ public class ViewPhotos extends AppCompatActivity {
         final String username = prefs.getString("username", null);
         final GridView gridView = findViewById(R.id.gridview);
         String photoPathNotFinal;
-        Log.d("FODASSE", getApplicationContext().getFilesDir().getPath());
-        if(isWifi){
-            photoPathNotFinal = getApplicationContext().getFilesDir().getPath() + "/wifi/" + username  + "/" + album + "/";
+        Log.d("P2PHOTO", getApplicationContext().getFilesDir().getPath());
+        if (isWifi) {
+            photoPathNotFinal = getApplicationContext().getFilesDir().getPath() + "/wifi/" + username + "/" + album + "/";
         } else {
             photoPathNotFinal = getApplicationContext().getFilesDir().getPath() + "/" + album + "/";
         }

@@ -15,8 +15,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:replace="android:icon"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="true"
+        tools:replace="android:icon">
         <activity android:name=".ViewAlbum" />
         <activity android:name=".FindUser" />
         <activity android:name=".P2photo" />
@@ -51,6 +51,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
         <service android:name="com.cmu.p2photo.wifi.MsgSenderActivity" />
         <service android:name="pt.inesc.termite.wifidirect.service.SimWifiP2pService" />
 

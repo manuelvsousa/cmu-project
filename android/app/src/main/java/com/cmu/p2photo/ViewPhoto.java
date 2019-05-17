@@ -7,8 +7,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 
-import com.cmu.p2photo.R;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;

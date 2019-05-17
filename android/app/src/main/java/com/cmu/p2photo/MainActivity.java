@@ -67,12 +67,12 @@ public class MainActivity extends AppCompatActivity {
                                         if ((boolean) map.get("success")) {
                                             Switch switch3 = (Switch) findViewById(R.id.switch3);
                                             if (!switch3.isChecked()) {
-                                                editor.putBoolean("wifi",false);
+                                                editor.putBoolean("wifi", false);
                                                 editor.apply();
                                                 if (map.get("dropbox").toString().equals("")) {
                                                     Toast.makeText(getApplicationContext(), "Welcome " + username.getText().toString(), Toast.LENGTH_SHORT).show();
                                                     Intent intent = new Intent(MainActivity.this, Dropbox.class);
-                                                    intent.putExtra("wifi",false);
+                                                    intent.putExtra("wifi", false);
                                                     startActivity(intent);
                                                     finish();
                                                 } else {
@@ -80,16 +80,16 @@ public class MainActivity extends AppCompatActivity {
                                                     editor.apply();
                                                     Toast.makeText(getApplicationContext(), "Welcome Back " + username.getText().toString(), Toast.LENGTH_SHORT).show();
                                                     Intent intent = new Intent(MainActivity.this, P2photo.class);
-                                                    intent.putExtra("wifi",false);
+                                                    intent.putExtra("wifi", false);
                                                     startActivity(intent);
                                                     finish();
                                                 }
                                             } else {
-                                                editor.putBoolean("wifi",true);
+                                                editor.putBoolean("wifi", true);
                                                 editor.apply();
                                                 Toast.makeText(getApplicationContext(), "Welcome 1" + username.getText().toString(), Toast.LENGTH_SHORT).show();
                                                 Intent intent = new Intent(MainActivity.this, P2photo.class);
-                                                intent.putExtra("wifi",true);
+                                                intent.putExtra("wifi", true);
                                                 startActivity(intent);
                                                 finish();
                                             }

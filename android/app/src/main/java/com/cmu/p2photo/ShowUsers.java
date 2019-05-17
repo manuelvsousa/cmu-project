@@ -8,7 +8,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.cmu.p2photo.R;
 import com.cmu.p2photo.cloud.util.Config;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;

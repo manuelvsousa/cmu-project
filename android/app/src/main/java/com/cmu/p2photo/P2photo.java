@@ -21,7 +21,6 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONObject;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,7 +43,7 @@ public class P2photo extends AppCompatActivity {
 
         SharedPreferences prefs = getSharedPreferences(sp, MODE_PRIVATE);
         wifiOn = prefs.getBoolean("wifi", false);
-        if(!wifiOn){
+        if (!wifiOn) {
             String accessToken = prefs.getString("dropbox", null);
             if (accessToken == null) {
                 throw new RuntimeException("Session Token not found in Shared Preferences");
@@ -52,17 +51,17 @@ public class P2photo extends AppCompatActivity {
 
             DropboxClientFactory.init(accessToken);
             PicassoClient.init(getApplicationContext(), DropboxClientFactory.getClient());
-        }else{
-            Log.d("cenas","cenas0");
+        } else {
+            Log.d("cenas", "cenas0");
             Intent serviceIntent = new Intent(this, MsgSenderActivity.class);
             this.startService(serviceIntent);
-            Log.d("cenas2","cenas2");
+            Log.d("cenas2", "cenas2");
 
         }
 
 
         TextView tv = findViewById(R.id.textView8);
-        if(wifiOn){
+        if (wifiOn) {
             tv.setText("Wifi Version");
             setTitle("Wifi Version");
         } else {

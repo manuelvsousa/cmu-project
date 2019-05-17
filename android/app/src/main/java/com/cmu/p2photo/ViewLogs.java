@@ -21,12 +21,12 @@ public class ViewLogs extends AppCompatActivity {
             BufferedReader bufferedReader = new BufferedReader(
                     new InputStreamReader(process.getInputStream()));
 
-            StringBuilder log=new StringBuilder();
+            StringBuilder log = new StringBuilder();
             String line = "";
             while ((line = bufferedReader.readLine()) != null) {
                 log.append(line);
             }
-            TextView tv = (TextView)findViewById(R.id.textView9);
+            TextView tv = (TextView) findViewById(R.id.textView9);
             tv.setMovementMethod(new ScrollingMovementMethod());
             tv.setText(log.toString());
         } catch (IOException e) {

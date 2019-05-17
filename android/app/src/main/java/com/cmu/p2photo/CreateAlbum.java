@@ -74,114 +74,114 @@ public class CreateAlbum extends AppCompatActivity {
                                         } else {
                                             EditText albumname = findViewById(R.id.editText2AlbumName);
 
-                                                if(!isWifi){
-                                                    new CreateFileTask(getApplicationContext(), DropboxClientFactory.getClient(), new CreateFileTask.Callback() {
-                                                        @Override
-                                                        public void onUploadComplete(String result) {
+                                            if (!isWifi) {
+                                                new CreateFileTask(getApplicationContext(), DropboxClientFactory.getClient(), new CreateFileTask.Callback() {
+                                                    @Override
+                                                    public void onUploadComplete(String result) {
 
-                                                            try {
-                                                                JSONObject jsonParams = new JSONObject();
-                                                                SharedPreferences prefs = getSharedPreferences(sp, MODE_PRIVATE);
-                                                                String token = prefs.getString("token", null);
-                                                                if (token == null) {
-                                                                    throw new RuntimeException("Session Token not found in Shared Preferences");
-                                                                }
-                                                                EditText albumname = findViewById(R.id.editText2AlbumName);
-                                                                jsonParams.put("token", token);
-                                                                jsonParams.put("albumName", albumname.getText().toString());
-                                                                jsonParams.put("link", result);
-                                                                StringEntity entity = new StringEntity(jsonParams.toString());
-                                                                AsyncHttpClient client = new AsyncHttpClient();
-                                                                client.post(getApplicationContext(), apiUrl + URL_FEED, entity, "application/json",
-                                                                        new JsonHttpResponseHandler() {
-                                                                            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                                                                                Log.d(URL_FEED, "response raw: " + response.toString());
-                                                                                try {
-                                                                                    Gson gson = new Gson();
-                                                                                    Map<String, Object> map = new HashMap<>();
-                                                                                    map = (Map<String, Object>) gson.fromJson(response.toString(), map.getClass());
-
-                                                                                    Log.d(URL_FEED, "Gson converted to map: " + map.toString());
-                                                                                    if ((boolean) map.get("success")) {
-                                                                                        Toast.makeText(CreateAlbum.this, "Album Criado com Sucesso", Toast.LENGTH_SHORT)
-                                                                                                .show();
-                                                                                    } else {
-                                                                                        if (map.get("message").equals("album already exists")) {
-                                                                                            //ignore
-                                                                                        } else {
-                                                                                            Toast.makeText(getApplicationContext(), "Huge Problem Occured", Toast.LENGTH_SHORT).show();
-                                                                                        }
-                                                                                    }
-                                                                                } catch (Exception e) {
-                                                                                    e.printStackTrace();
-                                                                                }
-                                                                            }
-
-                                                                            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                                                        try {
+                                                            JSONObject jsonParams = new JSONObject();
+                                                            SharedPreferences prefs = getSharedPreferences(sp, MODE_PRIVATE);
+                                                            String token = prefs.getString("token", null);
+                                                            if (token == null) {
+                                                                throw new RuntimeException("Session Token not found in Shared Preferences");
+                                                            }
+                                                            EditText albumname = findViewById(R.id.editText2AlbumName);
+                                                            jsonParams.put("token", token);
+                                                            jsonParams.put("albumName", albumname.getText().toString());
+                                                            jsonParams.put("link", result);
+                                                            StringEntity entity = new StringEntity(jsonParams.toString());
+                                                            AsyncHttpClient client = new AsyncHttpClient();
+                                                            client.post(getApplicationContext(), apiUrl + URL_FEED, entity, "application/json",
+                                                                    new JsonHttpResponseHandler() {
+                                                                        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                                                                            Log.d(URL_FEED, "response raw: " + response.toString());
+                                                                            try {
                                                                                 Gson gson = new Gson();
                                                                                 Map<String, Object> map = new HashMap<>();
-                                                                                map = (Map<String, Object>) gson.fromJson(errorResponse.toString(), map.getClass());
-                                                                                Toast.makeText(getApplicationContext(), map.get("message").toString(), Toast.LENGTH_SHORT).show();
-                                                                            }
-                                                                        });
-                                                            } catch (Exception e) {
-                                                                e.printStackTrace();
-                                                            }
-                                                        }
+                                                                                map = (Map<String, Object>) gson.fromJson(response.toString(), map.getClass());
 
-                                                        @Override
-                                                        public void onError(Exception e) {
-                                                            Log.e(URL_FEED, "Failed to upload file.", e);
-                                                        }
-                                                    }).execute("/" + albumname.getText().toString());
-                                                } else {
-                                                    try {
-                                                        JSONObject jsonParams = new JSONObject();
-                                                        SharedPreferences prefs = getSharedPreferences(sp, MODE_PRIVATE);
-                                                        String token = prefs.getString("token", null);
-                                                        if (token == null) {
-                                                            throw new RuntimeException("Session Token not found in Shared Preferences");
-                                                        }
-                                                        jsonParams.put("token", token);
-                                                        jsonParams.put("albumName", albumname.getText().toString());
-                                                        StringEntity entity = new StringEntity(jsonParams.toString());
-                                                        AsyncHttpClient client = new AsyncHttpClient();
-                                                        client.post(getApplicationContext(), apiUrl + URL_FEED, entity, "application/json",
-                                                                new JsonHttpResponseHandler() {
-                                                                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                                                                        Log.d(URL_FEED, "response raw: " + response.toString());
-                                                                        try {
+                                                                                Log.d(URL_FEED, "Gson converted to map: " + map.toString());
+                                                                                if ((boolean) map.get("success")) {
+                                                                                    Toast.makeText(CreateAlbum.this, "Album Criado com Sucesso", Toast.LENGTH_SHORT)
+                                                                                            .show();
+                                                                                } else {
+                                                                                    if (map.get("message").equals("album already exists")) {
+                                                                                        //ignore
+                                                                                    } else {
+                                                                                        Toast.makeText(getApplicationContext(), "Huge Problem Occured", Toast.LENGTH_SHORT).show();
+                                                                                    }
+                                                                                }
+                                                                            } catch (Exception e) {
+                                                                                e.printStackTrace();
+                                                                            }
+                                                                        }
+
+                                                                        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                                                                             Gson gson = new Gson();
                                                                             Map<String, Object> map = new HashMap<>();
-                                                                            map = (Map<String, Object>) gson.fromJson(response.toString(), map.getClass());
-
-                                                                            Log.d(URL_FEED, "Gson converted to map: " + map.toString());
-                                                                            if ((boolean) map.get("success")) {
-                                                                                Toast.makeText(CreateAlbum.this, "Album Criado com Sucesso", Toast.LENGTH_SHORT)
-                                                                                        .show();
-                                                                            } else {
-                                                                                if (map.get("message").equals("album already exists")) {
-                                                                                    //ignore
-                                                                                } else {
-                                                                                    Toast.makeText(getApplicationContext(), "Huge Problem Occured", Toast.LENGTH_SHORT).show();
-                                                                                }
-                                                                            }
-                                                                        } catch (Exception e) {
-                                                                            e.printStackTrace();
+                                                                            map = (Map<String, Object>) gson.fromJson(errorResponse.toString(), map.getClass());
+                                                                            Toast.makeText(getApplicationContext(), map.get("message").toString(), Toast.LENGTH_SHORT).show();
                                                                         }
-                                                                    }
+                                                                    });
+                                                        } catch (Exception e) {
+                                                            e.printStackTrace();
+                                                        }
+                                                    }
 
-                                                                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                                                    @Override
+                                                    public void onError(Exception e) {
+                                                        Log.e(URL_FEED, "Failed to upload file.", e);
+                                                    }
+                                                }).execute("/" + albumname.getText().toString());
+                                            } else {
+                                                try {
+                                                    JSONObject jsonParams = new JSONObject();
+                                                    SharedPreferences prefs = getSharedPreferences(sp, MODE_PRIVATE);
+                                                    String token = prefs.getString("token", null);
+                                                    if (token == null) {
+                                                        throw new RuntimeException("Session Token not found in Shared Preferences");
+                                                    }
+                                                    jsonParams.put("token", token);
+                                                    jsonParams.put("albumName", albumname.getText().toString());
+                                                    StringEntity entity = new StringEntity(jsonParams.toString());
+                                                    AsyncHttpClient client = new AsyncHttpClient();
+                                                    client.post(getApplicationContext(), apiUrl + URL_FEED, entity, "application/json",
+                                                            new JsonHttpResponseHandler() {
+                                                                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                                                                    Log.d(URL_FEED, "response raw: " + response.toString());
+                                                                    try {
                                                                         Gson gson = new Gson();
                                                                         Map<String, Object> map = new HashMap<>();
-                                                                        map = (Map<String, Object>) gson.fromJson(errorResponse.toString(), map.getClass());
-                                                                        Toast.makeText(getApplicationContext(), map.get("message").toString(), Toast.LENGTH_SHORT).show();
+                                                                        map = (Map<String, Object>) gson.fromJson(response.toString(), map.getClass());
+
+                                                                        Log.d(URL_FEED, "Gson converted to map: " + map.toString());
+                                                                        if ((boolean) map.get("success")) {
+                                                                            Toast.makeText(CreateAlbum.this, "Album Criado com Sucesso", Toast.LENGTH_SHORT)
+                                                                                    .show();
+                                                                        } else {
+                                                                            if (map.get("message").equals("album already exists")) {
+                                                                                //ignore
+                                                                            } else {
+                                                                                Toast.makeText(getApplicationContext(), "Huge Problem Occured", Toast.LENGTH_SHORT).show();
+                                                                            }
+                                                                        }
+                                                                    } catch (Exception e) {
+                                                                        e.printStackTrace();
                                                                     }
-                                                                });
-                                                    } catch (Exception e) {
-                                                        e.printStackTrace();
-                                                    }
+                                                                }
+
+                                                                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                                                                    Gson gson = new Gson();
+                                                                    Map<String, Object> map = new HashMap<>();
+                                                                    map = (Map<String, Object>) gson.fromJson(errorResponse.toString(), map.getClass());
+                                                                    Toast.makeText(getApplicationContext(), map.get("message").toString(), Toast.LENGTH_SHORT).show();
+                                                                }
+                                                            });
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
                                                 }
+                                            }
                                             Intent intent = new Intent(CreateAlbum.this, P2photo.class);
                                             startActivity(intent);
                                             finish();
