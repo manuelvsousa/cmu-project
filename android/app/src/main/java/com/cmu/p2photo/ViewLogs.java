@@ -17,14 +17,14 @@ public class ViewLogs extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_logs);
         try {
-            Process process = Runtime.getRuntime().exec("logcat -d");
+            Process process = Runtime.getRuntime().exec("logcat -d -s P2PHOTO");
             BufferedReader bufferedReader = new BufferedReader(
                     new InputStreamReader(process.getInputStream()));
-
             StringBuilder log = new StringBuilder();
             String line = "";
             while ((line = bufferedReader.readLine()) != null) {
                 log.append(line);
+                log.append("\n");
             }
             TextView tv = (TextView) findViewById(R.id.textView9);
             tv.setMovementMethod(new ScrollingMovementMethod());

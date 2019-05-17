@@ -91,20 +91,20 @@ public class MsgSenderActivity extends Service implements
         String username = prefs.getString("username", null);
         final String catalogPath = getApplicationContext().getFilesDir().getPath() + "/wifi/" + username + "/catalog";
         File file = new File(catalogPath);
-        Log.d("P2PHOTO", catalogPath + " was created");
+        Log.d("MYAPP", catalogPath + " was created");
         if (!file.exists()) {
             try {
                 file.getParentFile().mkdirs();
-                Log.d("P2PHOTO", catalogPath + "catalog was created");
+                Log.d("MYAPP", catalogPath + "catalog was created");
             } catch (Exception e) {
                 e.printStackTrace();
             }
         } else {
-            Log.d("P2PHOTO", catalogPath + " already exists");
+            Log.d("MYAPP", catalogPath + " already exists");
         }
 
 
-        Log.d("P2PHOTO", "ENTROUENTROU");
+        Log.d("MYAPP", "ENTROUENTROU");
         // initialize the WDSim API
         SimWifiP2pSocketManager.Init(getApplicationContext());
 
@@ -131,7 +131,7 @@ public class MsgSenderActivity extends Service implements
                 while (true) {
                     try {
                         Thread.sleep(30000);
-                        Log.d("P2PHOTO", "WIFI UPDATE THREAD JUST RAN!");
+                        Log.d("MYAPP", "WIFI UPDATE THREAD JUST RAN!");
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -152,19 +152,19 @@ public class MsgSenderActivity extends Service implements
     }
 
     public void fazertrocas(SimWifiP2pDeviceList peers, SimWifiP2pInfo groupInfo) {
-        Log.d("P2PHOTO", "NUMERO DE DISPOSITIVOS " + peers.getDeviceList().size());
+        Log.d("MYAPP", "NUMERO DE DISPOSITIVOS " + peers.getDeviceList().size());
         for (String deviceName : groupInfo.getDevicesInNetwork()) {
             SimWifiP2pDevice device = peers.getByName(deviceName);
-            Log.d("P2PHOTO", "Esta a ir para um Dispositivo");
+            Log.d("MYAPP", "Esta a ir para um Dispositivo");
 
             new OutgoingCommTask().executeOnExecutor(
                     AsyncTask.THREAD_POOL_EXECUTOR,
                     device.getVirtIp());
-            Log.d("P2PHOTO", "SendCommTask");
-            Log.d("P2PHOTO", device.getVirtIp().split(":")[0]);
-            Log.d("P2PHOTO", device.getRealIp());
-            Log.d("P2PHOTO", device.getVirtIp());
-            Log.d("P2PHOTO", device.deviceName);
+            Log.d("MYAPP", "SendCommTask");
+            Log.d("MYAPP", device.getVirtIp().split(":")[0]);
+            Log.d("MYAPP", device.getRealIp());
+            Log.d("MYAPP", device.getVirtIp());
+            Log.d("MYAPP", device.deviceName);
 
 
             new SendCommTask().executeOnExecutor(
@@ -254,7 +254,7 @@ public class MsgSenderActivity extends Service implements
         StringBuilder peersStr = new StringBuilder();
         for (String deviceName : groupInfo.getDevicesInNetwork()) {
             SimWifiP2pDevice device = devices.getByName(deviceName);
-            Log.d("P2PHOTO", device.getVirtIp());
+            Log.d("MYAPP", device.getVirtIp());
             new OutgoingCommTask().executeOnExecutor(
                     AsyncTask.THREAD_POOL_EXECUTOR,
                     device.getVirtIp());
@@ -273,13 +273,13 @@ public class MsgSenderActivity extends Service implements
         @Override
         protected Void doInBackground(Void... params) {
 
-            Log.d("P2PHOTO", "IncommingCommTask started (" + this.hashCode() + ").");
+            Log.d("MYAPP", "IncommingCommTask started (" + this.hashCode() + ").");
 
             try {
                 mSrvSocket = new SimWifiP2pSocketServer(
                         Integer.parseInt(getString(R.string.port)));
             } catch (IOException e) {
-                Log.d("P2PHOTO", "IncommingCommTask started (" + this.hashCode() + ").");
+                Log.d("MYAPP", "IncommingCommTask started (" + this.hashCode() + ").");
                 e.printStackTrace();
             }
             while (!Thread.currentThread().isInterrupted()) {
@@ -298,16 +298,16 @@ public class MsgSenderActivity extends Service implements
 
 
                         Map<String, List<String>> catalogrec;
-                        Log.d("P2PHOTO", "IN CATALOG FILE: " + receiveCatalog);
+                        Log.d("MYAPP", "IN CATALOG FILE: " + receiveCatalog);
                         if (!receiveCatalog.equals("")) {
-                            Log.d("P2PHOTO", "FILE NOT EMPY");
+                            Log.d("MYAPP", "FILE NOT EMPY");
                             catalogrec = new Gson().fromJson(receiveCatalog, new TypeToken<Map<String, ArrayList<String>>>() {
                             }.getType());
                         } else {
-                            Log.d("P2PHOTO", "FILE EMPTY");
+                            Log.d("MYAPP", "FILE EMPTY");
                             catalogrec = new HashMap<>();
                         }
-                        Log.d("P2PHOTO", "CATALOG RECEBIDO " + catalogrec.toString());
+                        Log.d("MYAPP", "CATALOG RECEBIDO " + catalogrec.toString());
                         final String sp = Config.getConfigValue(getApplicationContext(), "shared_preferences");
                         SharedPreferences prefs = getSharedPreferences(sp, MODE_PRIVATE);
                         String username = prefs.getString("username", null);
@@ -316,18 +316,18 @@ public class MsgSenderActivity extends Service implements
                         String json = readFile(catalogPath);
 
                         Map<String, List<String>> catalogown;
-                        Log.d("P2PHOTO", "IN CATALOG FILE1: " + json);
+                        Log.d("MYAPP", "IN CATALOG FILE1: " + json);
                         if (!json.equals("")) {
-                            Log.d("P2PHOTO", "FILE NOT EMPY1");
+                            Log.d("MYAPP", "FILE NOT EMPY1");
                             catalogown = new Gson().fromJson(json, new TypeToken<Map<String, ArrayList<String>>>() {
                             }.getType());
                         } else {
-                            Log.d("P2PHOTO", "FILE EMPTY1");
+                            Log.d("MYAPP", "FILE EMPTY1");
                             catalogown = new HashMap<>();
                         }
 
-                        Log.d("P2PHOTO", "OWN RECEBIDO " + catalogown.toString());
-                        Log.d("P2PHOTO", "ESTRANGEIRO RECEBIDO " + catalogrec.toString());
+                        Log.d("MYAPP", "OWN RECEBIDO " + catalogown.toString());
+                        Log.d("MYAPP", "ESTRANGEIRO RECEBIDO " + catalogrec.toString());
 
                         Map<String, List<String>> quero = new HashMap<>();
                         for (String album : catalogown.keySet()) {
@@ -345,7 +345,7 @@ public class MsgSenderActivity extends Service implements
                                 }
                             }
                         }
-                        Log.d("P2PHOTO", "QUERO FOTOS " + quero.toString());
+                        Log.d("MYAPP", "QUERO FOTOS " + quero.toString());
 
                         out.writeObject(quero);
                         out.flush();
@@ -354,31 +354,31 @@ public class MsgSenderActivity extends Service implements
                         //TODO vai receber e guardar as fotos aqui
 
                         Map<String, List<Map<String, byte[]>>> fotosRecebidas = (HashMap<String, List<Map<String, byte[]>>>) in.readObject();
-                        Log.d("P2PHOTO", "Fotos Recebidas: " + fotosRecebidas.toString());
+                        Log.d("MYAPP", "Fotos Recebidas: " + fotosRecebidas.toString());
 
                         for (String album : fotosRecebidas.keySet()) {
                             for (Map<String, byte[]> mapa : fotosRecebidas.get(album)) {
                                 for (String fotoName : mapa.keySet()) {
                                     String fotoPath = getApplicationContext().getFilesDir().getPath() + "/wifi/" + username + "/" + album + "/" + fotoName;
-                                    Log.d("P2PHOTO", "VAI ESCREVER FOTO!!! " + fotoPath);
+                                    Log.d("MYAPP", "VAI ESCREVER FOTO!!! " + fotoPath);
                                     FileOutputStream fos = new FileOutputStream(fotoPath);
                                     fos.write(mapa.get(fotoName));
                                     fos.close();
 
                                     File file = new File(catalogPath);
-                                    Log.d("P2PHOTO", catalogPath + " was created");
+                                    Log.d("MYAPP", catalogPath + " was created");
                                     if (!file.exists()) {
                                         try {
                                             file.createNewFile();
                                             String json2 = readFile(catalogPath);
                                             Map<String, List<String>> events;
-                                            Log.d("P2PHOTO", "IN CATALOG FILE: " + json);
+                                            Log.d("MYAPP", "IN CATALOG FILE: " + json);
                                             if (!json.equals("")) {
-                                                Log.d("P2PHOTO", "FILE NOT EMPY");
+                                                Log.d("MYAPP", "FILE NOT EMPY");
                                                 events = new Gson().fromJson(json2, new TypeToken<Map<String, ArrayList<String>>>() {
                                                 }.getType());
                                             } else {
-                                                Log.d("P2PHOTO", "FILE EMPTY");
+                                                Log.d("MYAPP", "FILE EMPTY");
                                                 events = new HashMap<>();
                                             }
                                             if (!events.containsKey(album)) {
@@ -389,26 +389,26 @@ public class MsgSenderActivity extends Service implements
                                             fnew.createNewFile();
                                             FileWriter fw = new FileWriter(catalogPath);
                                             Gson gson = new GsonBuilder().create();
-                                            Log.d("P2PHOTO", gson.toJson(events));
+                                            Log.d("MYAPP", gson.toJson(events));
                                             fw.write(gson.toJson(events));
                                             fw.close();
                                         } catch (Exception e) {
                                             e.printStackTrace();
                                         }
                                     } else {
-                                        Log.d("P2PHOTO", fotoPath + "catalog already exists");
+                                        Log.d("MYAPP", fotoPath + "catalog already exists");
                                     }
 
                                     String jsonCatalog = readFile(catalogPath);
 
                                     Map<String, List<String>> events;
-                                    Log.d("P2PHOTO", "IN CATALOG FILE: " + jsonCatalog);
+                                    Log.d("MYAPP", "IN CATALOG FILE: " + jsonCatalog);
                                     if (!jsonCatalog.equals("")) {
-                                        Log.d("P2PHOTO", "FILE NOT EMPY");
+                                        Log.d("MYAPP", "FILE NOT EMPY");
                                         events = new Gson().fromJson(jsonCatalog, new TypeToken<Map<String, ArrayList<String>>>() {
                                         }.getType());
                                     } else {
-                                        Log.d("P2PHOTO", "FILE EMPTY");
+                                        Log.d("MYAPP", "FILE EMPTY");
                                         events = new HashMap<>();
                                     }
                                     if (events.containsKey(album)) {
@@ -420,7 +420,7 @@ public class MsgSenderActivity extends Service implements
                                     fnew.createNewFile();
                                     FileWriter fw = new FileWriter(catalogPath);
                                     Gson gson = new GsonBuilder().create();
-                                    Log.d("P2PHOTO", gson.toJson(events));
+                                    Log.d("MYAPP", gson.toJson(events));
                                     fw.write(gson.toJson(events));
                                     fw.close();
                                 }
@@ -439,14 +439,14 @@ public class MsgSenderActivity extends Service implements
 
 
                     } catch (IOException e) {
-                        Log.d("P2PHOTO", "Error reading socket: " + e.getMessage());
+                        Log.d("MYAPP", "Error reading socket: " + e.getMessage());
                     } catch (ClassNotFoundException e) {
                         e.printStackTrace();
                     } finally {
                         sock.close();
                     }
                 } catch (IOException e) {
-                    Log.d("P2PHOTO", "Error reading socket: " + e.getMessage());
+                    Log.d("MYAPP", "Error reading socket: " + e.getMessage());
                     break;
                     //e.printStackTrace();
                 }
@@ -461,20 +461,20 @@ public class MsgSenderActivity extends Service implements
 
         @Override
         protected void onPreExecute() {
-            Log.d("P2PHOTO", "PreOUTGOING");
+            Log.d("MYAPP", "PreOUTGOING");
         }
 
         @Override
         protected String doInBackground(String... params) {
-            Log.d("P2PHOTO", "BACKGROUNDOUTGOING");
+            Log.d("MYAPP", "BACKGROUNDOUTGOING");
             try {
-                Log.d("P2PHOTO", "FUNCIONOU McliSOCKET");
+                Log.d("MYAPP", "FUNCIONOU McliSOCKET");
                 mCliSocket = new SimWifiP2pSocket(params[0], Integer.parseInt(getString(R.string.port)));
 
                 new SendCommTask().executeOnExecutor(
                         AsyncTask.THREAD_POOL_EXECUTOR,
                         params[0]);
-                Log.d("P2PHOTO", "----------------------------------------------------------------------------------");
+                Log.d("MYAPP", "----------------------------------------------------------------------------------");
             } catch (UnknownHostException e) {
                 return "Unknown Host:" + e.getMessage();
             } catch (IOException e) {
@@ -501,11 +501,11 @@ public class MsgSenderActivity extends Service implements
 
 
                 try {
-                    Log.d("P2PHOTO", "1");
+                    Log.d("MYAPP", "1");
                     //mCliSocket.getOutputStream().write(("   iuj"+"\n").getBytes());
-                    Log.d("P2PHOTO", "2");
+                    Log.d("MYAPP", "2");
                     ObjectOutputStream out = new ObjectOutputStream(mCliSocket.getOutputStream());
-                    Log.d("P2PHOTO", "3");
+                    Log.d("MYAPP", "3");
                     ObjectInputStream in = new ObjectInputStream(mCliSocket.getInputStream());
                     //USERNAME
                     final String sp = Config.getConfigValue(getApplicationContext(), "shared_preferences");
@@ -524,13 +524,13 @@ public class MsgSenderActivity extends Service implements
                     out.flush();
                     //Buscar Map de fotos pretendidas
                     Map<String, List<String>> userquer = (HashMap<String, List<String>>) in.readObject();
-                    Log.d("P2PHOTO", userquer.toString());
+                    Log.d("MYAPP", userquer.toString());
 
 
                     Map<String, List<Map<String, byte[]>>> mapdefotos = new HashMap<>();
                     for (String album : userquer.keySet()) {
                         String albumpath = getApplicationContext().getFilesDir().getPath() + "/wifi/" + username + "/" + album + "/";
-                        Log.d("P2PHOTO", "albumpath " + albumpath);
+                        Log.d("MYAPP", "albumpath " + albumpath);
                         for (String photoName : userquer.get(album)) {
                             String fotopath = albumpath + photoName;
                             File asd = new File(fotopath);
@@ -552,7 +552,7 @@ public class MsgSenderActivity extends Service implements
                         }
                     }
 
-                    Log.d("P2PHOTO", "FOTOS A ENVIAR " + mapdefotos.toString());
+                    Log.d("MYAPP", "FOTOS A ENVIAR " + mapdefotos.toString());
 
 
                     out.writeObject(mapdefotos);

@@ -30,7 +30,7 @@ public class ViewPhotos extends AppCompatActivity {
         final String username = prefs.getString("username", null);
         final GridView gridView = findViewById(R.id.gridview);
         String photoPathNotFinal;
-        Log.d("P2PHOTO", getApplicationContext().getFilesDir().getPath());
+        Log.d("MYAPP", getApplicationContext().getFilesDir().getPath());
         if (isWifi) {
             photoPathNotFinal = getApplicationContext().getFilesDir().getPath() + "/wifi/" + username + "/" + album + "/";
         } else {

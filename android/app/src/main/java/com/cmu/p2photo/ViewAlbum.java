@@ -182,19 +182,19 @@ public class ViewAlbum extends AppCompatActivity {
                 final String catalogPath = getApplicationContext().getFilesDir().getPath() + "/wifi/" + username + "/catalog";
 
                 File file = new File(catalogPath);
-                Log.d("P2PHOTO", catalogPath + " was created");
+                Log.d("MYAPP", catalogPath + " was created");
                 if (!file.exists()) {
                     try {
                         file.createNewFile();
                         String json = readFile(catalogPath);
                         Map<String, List<String>> events;
-                        Log.d("P2PHOTO", "IN CATALOG FILE: " + json);
+                        Log.d("MYAPP", "IN CATALOG FILE: " + json);
                         if (!json.equals("")) {
-                            Log.d("P2PHOTO", "FILE NOT EMPY");
+                            Log.d("MYAPP", "FILE NOT EMPY");
                             events = new Gson().fromJson(json, new TypeToken<Map<String, ArrayList<String>>>() {
                             }.getType());
                         } else {
-                            Log.d("P2PHOTO", "FILE EMPTY");
+                            Log.d("MYAPP", "FILE EMPTY");
                             events = new HashMap<>();
                         }
                         if (!events.containsKey(album)) {
@@ -205,17 +205,17 @@ public class ViewAlbum extends AppCompatActivity {
                         fnew.createNewFile();
                         FileWriter fw = new FileWriter(catalogPath);
                         Gson gson = new GsonBuilder().create();
-                        Log.d("P2PHOTO", gson.toJson(events));
+                        Log.d("MYAPP", gson.toJson(events));
                         fw.write(gson.toJson(events));
                         fw.close();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 } else {
-                    Log.d("P2PHOTO", photoPath + "catalog already exists");
+                    Log.d("MYAPP", photoPath + "catalog already exists");
                 }
             } else {
-                Log.d("P2PHOTO", photoPath + " already exists");
+                Log.d("MYAPP", photoPath + " already exists");
             }
 
         } else {
@@ -323,20 +323,20 @@ public class ViewAlbum extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-        Log.d("P2PHOTO", "ELLELELLE");
+        Log.d("MYAPP", "ELLELELLE");
         for (int i = 0; i < photos.size(); i++) {
             String parsedPhotoName = photos.get(i).split("/")[photos.get(i).split("/").length - 1];
-            Log.d("P2PHOTO", parsedPhotoName);
-            Log.d("P2PHOTO", parsedPhotoName.split("\\.").toString());
+            Log.d("MYAPP", parsedPhotoName);
+            Log.d("MYAPP", parsedPhotoName.split("\\.").toString());
             String photoName = parsedPhotoName.split("\\.")[0];
-            Log.d("P2PHOTO", photoName);
+            Log.d("MYAPP", photoName);
             if (savePhoto(photoName)) {
                 (new AsyncTask<String, Void, Void>() {
                     @Override
                     protected Void doInBackground(String... params) {
                         try {
                             URL url = new URL(params[0]);
-                            Log.d("P2PHOTO", params[0]);
+                            Log.d("MYAPP", params[0]);
                             InputStream in = new BufferedInputStream(url.openStream());
                             ByteArrayOutputStream out = new ByteArrayOutputStream();
                             byte[] buf = new byte[1024];
@@ -385,7 +385,7 @@ public class ViewAlbum extends AppCompatActivity {
 
             fos.write(photoBytes);
             fos.close();
-            Log.d("P2PHOTO", photoName + " was written to folder");
+            Log.d("MYAPP", photoName + " was written to folder");
         } catch (java.io.IOException e) {
             Log.e("P2PHOTO", "Exception in photoCallback", e);
         }
@@ -405,7 +405,7 @@ public class ViewAlbum extends AppCompatActivity {
                 sb.append(line);
             }
             Gson gson = new Gson(); // Or use new GsonBuilder().create();
-            Log.d("P2PHOTO", sb.toString());
+            Log.d("MYAPP", sb.toString());
             if (sb.toString().equals("")) {
                 savedPhotos = new ArrayList<String>();
             } else {
@@ -417,11 +417,11 @@ public class ViewAlbum extends AppCompatActivity {
 
         if (!savedPhotos.contains(fileName)) {
             savedPhotos.add(fileName);
-            Log.d("P2PHOTO", new Gson().toJson(savedPhotos));
+            Log.d("MYAPP", new Gson().toJson(savedPhotos));
             saveToJsonCatalog(new Gson().toJson(savedPhotos));
             return true;
         } else {
-            Log.d("P2PHOTO", "skipped");
+            Log.d("MYAPP", "skipped");
             return false;
         }
 
@@ -501,37 +501,37 @@ public class ViewAlbum extends AppCompatActivity {
                         final String photoPath = getApplicationContext().getFilesDir().getPath() + "/wifi/" + username + "/" + album + "/";
                         String[] splitedPhotoPath = path.split("/");
                         final String fileName = randomAlphaNumeric(32) + splitedPhotoPath[splitedPhotoPath.length - 1];
-                        Log.d("P2PHOTO", "wifi mode onActivityResult");
-                        Log.d("P2PHOTO", path);
-                        Log.d("P2PHOTO", photoPath + fileName);
+                        Log.d("MYAPP", "wifi mode onActivityResult");
+                        Log.d("MYAPP", path);
+                        Log.d("MYAPP", photoPath + fileName);
                         copyFileUsingStream(new File(path), new File(photoPath + fileName));
-                        Log.d("P2PHOTO", "copyFileUsingStream done");
+                        Log.d("MYAPP", "copyFileUsingStream done");
 
                         final String catalogPath = getApplicationContext().getFilesDir().getPath() + "/wifi/" + username + "/catalog";
 
                         File file = new File(catalogPath);
-                        Log.d("P2PHOTO", catalogPath + " was created");
+                        Log.d("MYAPP", catalogPath + " was created");
                         if (!file.exists()) {
                             try {
                                 file.createNewFile();
-                                Log.d("P2PHOTO", photoPath + "catalog was created");
+                                Log.d("MYAPP", photoPath + "catalog was created");
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         } else {
-                            Log.d("P2PHOTO", photoPath + "catalog already exists");
+                            Log.d("MYAPP", photoPath + "catalog already exists");
                         }
 
                         String json = readFile(catalogPath);
 
                         Map<String, List<String>> events;
-                        Log.d("P2PHOTO", "IN CATALOG FILE: " + json);
+                        Log.d("MYAPP", "IN CATALOG FILE: " + json);
                         if (!json.equals("")) {
-                            Log.d("P2PHOTO", "FILE NOT EMPY");
+                            Log.d("MYAPP", "FILE NOT EMPY");
                             events = new Gson().fromJson(json, new TypeToken<Map<String, ArrayList<String>>>() {
                             }.getType());
                         } else {
-                            Log.d("P2PHOTO", "FILE EMPTY");
+                            Log.d("MYAPP", "FILE EMPTY");
                             events = new HashMap<>();
                         }
                         if (events.containsKey(album)) {
@@ -543,7 +543,7 @@ public class ViewAlbum extends AppCompatActivity {
                         fnew.createNewFile();
                         FileWriter fw = new FileWriter(catalogPath);
                         Gson gson = new GsonBuilder().create();
-                        Log.d("P2PHOTO", gson.toJson(events));
+                        Log.d("MYAPP", gson.toJson(events));
                         fw.write(gson.toJson(events));
                         fw.close();
 
@@ -629,7 +629,7 @@ public class ViewAlbum extends AppCompatActivity {
                                 Log.d(URL_FEED2, "Gson converted to map: " + map.toString());
 
                                 List<String> catalogs = (List<String>) map.get("catalogs");
-                                Log.d("P2PHOTO", "YEEEEEEP 1");
+                                Log.d("MYAPP", "YEEEEEEP 1");
                                 catalogProcessor(catalogs);
                                 if (!(boolean) map.get("success")) {
                                     Toast.makeText(getApplicationContext(), "Huge Problem Occured", Toast.LENGTH_SHORT).show();
@@ -660,7 +660,7 @@ public class ViewAlbum extends AppCompatActivity {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, byte[] response) {
                     urls += new String(response);
-                    Log.d("P2PHOTO", "YEEEEEEP 2");
+                    Log.d("MYAPP", "YEEEEEEP 2");
                     writePhotos();
                     latch.countDown();
                 }

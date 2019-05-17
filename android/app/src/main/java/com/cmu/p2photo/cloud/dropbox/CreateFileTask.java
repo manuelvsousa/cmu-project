@@ -48,12 +48,12 @@ public class CreateFileTask extends AsyncTask<String, Void, String> {
             FileMetadata fr = mDbxClient.files().uploadBuilder(params[0] + "/catalog").uploadAndFinish(targetStream);
         } catch (CreateFolderErrorException err) {
             if (err.errorValue.isPath() && err.errorValue.getPathValue().isConflict()) {
-                Log.d("P2PHOTO", "Something already exists at the path.");
+                Log.d("MYAPP", "Something already exists at the path.");
             } else {
-                Log.d("P2PHOTO", "Another error occured");
+                Log.d("MYAPP", "Another error occured");
             }
         } catch (Exception err) {
-            Log.d("P2PHOTO", "Very bad error occured");
+            Log.d("MYAPP", "Very bad error occured");
         }
         try {
             SharedLinkMetadata meta = mDbxClient.sharing().createSharedLinkWithSettings(params[0] + "/catalog");
